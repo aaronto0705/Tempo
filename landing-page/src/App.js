@@ -9,7 +9,7 @@ function App() {
       <header className="text-white p-4 d-flex justify-content-between align-items-center" style={{ backgroundColor: '#add8e6' }}>
         <div className="d-flex align-items-center">
           <div className="d-flex align-items-center">
-            <a href="/who-we-are" className="text-black mr-2">Tempo</a> {/* Made "Tempo" clickable */}
+            <span className="text-black mr-2">Tempo</span>
             <button
               className={`btn btn-link text-black ${activeTab === 'whoWeAre' ? 'active' : ''}`}
               onClick={() => setActiveTab('whoWeAre')}
