@@ -3,7 +3,7 @@
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 30vmin;
   pointer-events: none;
 }
 
@@ -13,14 +13,35 @@
   }
 }
 
+/* Define black text color */
+.text-black {
+  color: black;
+}
+
+/* Update the background color of the header */
 .App-header {
-  background-color: #282c34;
+  background-color: #add8e6 !important; /* Light blue color */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+/* Ensure circles are colored and styled */
+.circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #add8e6 !important; /* Light blue color */
   color: white;
 }
 
@@ -35,4 +56,35 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Define a custom light blue color */
+.lightblue {
+  background-color: #add8e6; /* Light blue color */
+}
+
+/* Ensure circles are colored and styled */
+.circle.bg-lightblue {
+  background-color: #add8e6; /* Light blue color */
+  color: white;
+}
+
+/* Styling for active tab */
+.btn.active {
+  font-weight: bold;
+}
+
+/* Adjustments for iframe responsiveness */
+.embed-responsive-16by9 {
+  position: relative;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+
+.embed-responsive-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
