@@ -10,7 +10,7 @@ jobs:
         with:
           node-version: 16
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci
       - uses: sibiraj-s/action-eslint@v3
         with:
           eslint-args: '--ignore-path=.eslintignore --quiet'
