@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "lint": "eslint ."
   },
   "dependencies": {
     "expo": "~50.0.14",
@@ -16,7 +17,10 @@
     "react-native": "0.73.6"
   },
   "devDependencies": {
-    "@babel/core": "^7.24.4"
+    "@babel/core": "^7.24.4",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-native": "^4.1.0"
   },
   "private": true
 }
