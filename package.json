@@ -11,6 +11,7 @@
     "test": "jest --passWithNoTests"
   },
   "dependencies": {
+    "@testing-library/react": "^14.2.2",
     "expo": "~50.0.14",
     "expo-status-bar": "~1.11.1",
     "jest": "^29.7.0",
