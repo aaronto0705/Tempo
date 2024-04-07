@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Pressable, Image } from 'react-native';
+import { Text, View, SafeAreaView, Pressable, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Entypo } from '@expo/vector-icons';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
@@ -12,7 +12,7 @@ const LoginScreen = () => {
         tokenEndpoint: 'https://accounts.spotify.com/api/token',
     };
 
-    const [_, response, promptAsync] = useAuthRequest(
+    const [request, response, promptAsync] = useAuthRequest(
         {
             clientId: '0619c1f2aa5d4d97b2da4d1a2926cf73',
             scopes: [
@@ -46,6 +46,7 @@ const LoginScreen = () => {
 
     useEffect(() => {
         console.log(response)
+        console.log(request)
         if (response?.type === "success") {
             console.log(response)
             const { code } = response.params;
