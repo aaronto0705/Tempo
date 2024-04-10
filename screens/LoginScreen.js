@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
+
     const discovery = {
         authorizationEndpoint: 'https://accounts.spotify.com/authorize',
         tokenEndpoint: 'https://accounts.spotify.com/api/token',
@@ -16,43 +17,55 @@ const LoginScreen = () => {
         {
             clientId: '0619c1f2aa5d4d97b2da4d1a2926cf73',
             scopes: [
-                'user-read-email',
-                'user-library-read',
-                'user-read-recently-played',
-                'user-top-read',
-                'playlist-read-private',
-                'playlist-read-collaborative',
-                'playlist-modify-public'
+                "user-read-email",
+                "user-library-read",
+                "user-read-recently-played",
+                "user-top-read",
+                "playlist-read-private",
+                "playlist-read-collaborative",
+                "playlist-modify-public"
             ],
+            usePKCE: false,
             redirectUri: makeRedirectUri({
-                useProxy: true,
+                scheme: 'exp',
+                path: "/spotify-auth-callback"
             }),
         },
         discovery
     );
 
-    const navigation = useNavigation();
-
     useEffect(() => {
-        const handleAuthResponse = async () => {
-            if (response?.type === 'success') {
-                const { access_token } = response.params;
-
-                // Store the access token in AsyncStorage
-                await AsyncStorage.setItem('accessToken', access_token);
-
-                // Navigate to Main screen
+        const checkLoginStatus = async () => {
+            const userLoggedIn = await AsyncStorage.getItem('userLoggedIn');
+            if (userLoggedIn) {
                 navigation.navigate('Main');
             }
         };
 
-        handleAuthResponse();
+        checkLoginStatus();
+    }, []);
+
+    useEffect(() => {
+        console.log(response)
+        console.log(request)
+        if (response?.type === "success") {
+            console.log(response)
+            const { code } = response.params;
+            console.log(code)
+            AsyncStorage.setItem('userLoggedIn', 'true');
+            
+            navigation.navigate('Main');
+        }
     }, [response]);
 
+    const navigation = useNavigation();
+
     const handlePress = () => {
-        // Initiate Spotify authentication
+        console.log("Button pressed");
         promptAsync();
     };
+
+    console.log("Rendering LoginScreen");
 
     return (
         <LinearGradient colors={["#587E7D", "#587E7D"]} style={{ flex: 1 }}>
