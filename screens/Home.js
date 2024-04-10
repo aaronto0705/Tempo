@@ -1,5 +1,4 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import { View, Image, FlatList, TouchableOpacity, StyleSheet, Text } from 'react-native';
 
 function Home() {
@@ -40,7 +39,7 @@ function Home() {
                 keyExtractor={(tempo) => tempo.id}
             />
 
-            <TouchableOpacity style={styles.buttonContainer} >
+            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference1')}>
                 <Text style={[styles.buttonText]}>CREATE A TEMPO</Text>
             </TouchableOpacity>
 

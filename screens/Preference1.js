@@ -37,7 +37,7 @@ function Preference1() {
                 keyboardType="numeric"
                 />
             </View>
-            <TouchableOpacity style={styles.buttonContainer} >
+            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference2')}>
                 <Text style={[styles.buttonText]}>Next</Text>
             </TouchableOpacity>
         </View>
