@@ -92,6 +92,9 @@ const HomeScreen = () => {
             <Text style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginTop: 20 }}>
                 HomeScreen
             </Text>
+            <Pressable onPress={() => navigation.navigate('Login')}>
+                <Text>Logout</Text>
+            </Pressable>
             <FlatList
                 data={playlist}
                 keyExtractor={(item) => item.id}
@@ -99,7 +102,7 @@ const HomeScreen = () => {
                     <Text style={{ fontSize: 16 }}>{item.name}</Text>
                 )}
             />
-            <Pressable onPress={handleCreatePlaylist} style={{ padding: 10, backgroundColor: 'blue', borderRadius: 10, marginTop: 20, alignSelf: 'center' }}>
+            <Pressable onPress={handleCreatePlaylist} style={{ padding: 100, backgroundColor: 'blue', borderRadius: 10, marginTop: 50, alignSelf: 'center' }}>
                 <Text style={{ fontSize: 18, color: 'white' }}>Create Playlist</Text>
             </Pressable>
         </SafeAreaView>
