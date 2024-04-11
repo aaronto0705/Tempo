@@ -12,6 +12,9 @@ const LoginScreen = () => {
         tokenEndpoint: 'https://accounts.spotify.com/api/token',
     };
 
+    const clientId = 'd6172fc8614948aeacebdcadf338de04';
+    const clientSecret = '406c862d289c410691ef7df00acde84b';
+
     const [request, response, promptAsync] = useAuthRequest(
         {
             clientId: 'd6172fc8614948aeacebdcadf338de04',
@@ -20,6 +23,8 @@ const LoginScreen = () => {
                 'user-library-read',
                 'user-read-recently-played',
                 'user-top-read',
+                'user-read-private',
+                'user-read-email',
                 'playlist-read-private',
                 'playlist-read-collaborative',
                 'playlist-modify-public'
@@ -35,25 +40,28 @@ const LoginScreen = () => {
 
     useEffect(() => {
         const checkTokenValidity = async () => {
-          const accessToken = await AsyncStorage.getItem("accessToken");
-          const expirationDate = await AsyncStorage.getItem("accessTokenExpirationTime");
-          console.log("Access token:", accessToken);
-          console.log("Expiration time:", expirationDate);
-    
-          if(accessToken && expirationDate){
-            const currentTime = new Date().getTime();
-            if(currentTime < parseInt(expirationDate)){
-                navigation.navigate('Main');
+            await AsyncStorage.clear();
+
+            const accessToken = await AsyncStorage.getItem("accessToken");
+            const expirationDate = await AsyncStorage.getItem("accessTokenExpirationTime");
+            console.log("Access token:", accessToken);
+            console.log("Expiration time:", expirationDate);
+
+            if(accessToken && expirationDate){
+                const currentTime = new Date().getTime();
+                if(currentTime < parseInt(expirationDate)){
+                    navigation.navigate('Main');
             } else {
-              // Token would be expired so we need to remove it from the async storage
-              AsyncStorage.removeItem("accessToken");
-              AsyncStorage.removeItem("accessTokenExpirationTime");
+                // Token would be expired so we need to remove it from the async storage
+                AsyncStorage.removeItem("accessToken");
+                AsyncStorage.removeItem("accessTokenExpirationTime");
+                AsyncStorage.removeItem("userId");
             }
-          }
+            }
         }
-    
+
         checkTokenValidity();
-      },[])
+        },[])
 
     useEffect(() => {
         const handleAuthResponse = async () => {
@@ -79,8 +87,31 @@ const LoginScreen = () => {
                     const expirationTime = new Date().getTime() + expires_in * 1000;
                     await AsyncStorage.setItem('accessTokenExpirationTime', expirationTime.toString());
               
-                    console.log('Access token stored:', access_token);
+                    console.log(responseData);
                     navigation.navigate('Main');
+
+                    const userInfoResponse = await fetch('https://api.spotify.com/v1/me', {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Bearer ${access_token}`,
+                        },
+                    });
+
+                    console.log('User Info Response JSON:', await userInfoResponse.json());
+
+                    if (!userInfoResponse.ok) {
+                        console.log(access_token);
+                        throw new Error('Failure to fetch user information');
+                    }
+
+                    const userInfoData = await userInfoResponse.json();
+                    const userId = userInfoData.id;
+
+                    // Store Spotify user ID in AsyncStorage
+                    await AsyncStorage.setItem('userId', userId);
+
+                    console.log('Spotify user ID stored:', userId);
+
                   } catch (error) {
                     console.error('Failed to fetch token:', error);
                   }
