@@ -1,5 +1,5 @@
 import { Text, Pressable, SafeAreaView } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
@@ -20,25 +20,63 @@ const HomeScreen = () => {
     
     const handleCreatePlaylist = async () => {
         try {
-          const accessToken = await AsyncStorage.getItem('accessToken');
-          const apiUrl = 'https://api.spotify.com/v1/me';
-          
-          const response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          });
+            const userId = await AsyncStorage.getItem('userId');
+            const accessToken = await AsyncStorage.getItem('accessToken');
+            const apiUrl = `https://api.spotify.com/v1/users/${userId}/playlists`;
+
+            // Request payload for creating a new playlist
+            const playlistData = {
+                name: 'New Playlist',
+                description: 'New playlist description',
+                public: false,
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(playlistData),
+            });
+
             if (response.ok) {
-                const userData = await response.json(); 
-                console.log('User Data:', userData); 
-          } else {
-                console.error('Failed to fetch user data:', response.statusText);
-          }
+                const playlist = await response.json();
+                console.log('New playlist created:', playlist);
+            } else {
+                console.error('Failed to create playlist:', response.statusText);
+            }
         } catch (error) {
-            console.error('Error fetching user data:', error);
+            console.error('Error creating playlist:', error);
         }
-      };
+    };
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const accessToken = await AsyncStorage.getItem('accessToken');
+                const apiUrl = 'https://api.spotify.com/v1/me';
+                
+                const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                });
+        
+                if (response.ok) {
+                    const userData = await response.json();
+                    console.log('User Data:', userData);
+                    await AsyncStorage.setItem('userId', userData.id);
+                } else {
+                    console.error('Failed to fetch user data:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+        fetchData(); 
+    }, []); 
       
 
     return (
