@@ -21,7 +21,7 @@ const LoginScreen = () => {
         tokenEndpoint: 'https://accounts.spotify.com/api/token',
     };
 
-    const [request, response, promptAsync] = useAuthRequest({
+    const [, , promptAsync] = useAuthRequest({
         clientId: spotifyCredentials.clientId,
         scopes: scopesArr,
         redirectUri: redirectUri,   

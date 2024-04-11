@@ -1,6 +1,6 @@
 import { encode as btoa } from 'base-64';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { spotifyCredentials, scopesArr } from './Credentials';
+import { spotifyCredentials } from './Credentials';
 
 // Function to store user data in AsyncStorage
 const setUserData = async (key, value) => {
