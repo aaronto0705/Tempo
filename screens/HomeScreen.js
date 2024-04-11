@@ -6,9 +6,18 @@ import { useNavigation } from '@react-navigation/native';
 const HomeScreen = () => {
     const navigation = useNavigation();
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+      try {
         navigation.navigate('Login');
+        await AsyncStorage.removeItem('accessToken');
+        await AsyncStorage.removeItem('refreshToken');
+        await AsyncStorage.removeItem('expirationTime');    
+        console.log('Logout successful');
+      } catch (error) {
+        console.error('Error during logout:', error);
+      }
     };
+    
 
     const handleCreatePlaylist = async () => {
         try {
