@@ -11,6 +11,11 @@ import { useNavigation } from '@react-navigation/native';
 const LoginScreen = () => {
     const navigation = useNavigation();
 
+    const redirectUri = makeRedirectUri({
+        scheme: 'exp',
+        path: "/spotify-auth-callback"
+    });
+
     const discovery = {
         authorizationEndpoint: 'https://accounts.spotify.com/authorize',
         tokenEndpoint: 'https://accounts.spotify.com/api/token',
@@ -19,10 +24,7 @@ const LoginScreen = () => {
     const [request, response, promptAsync] = useAuthRequest({
         clientId: spotifyCredentials.clientId,
         scopes: scopesArr,
-        redirectUri: makeRedirectUri({
-            scheme: 'exp',
-            path: "/spotify-auth-callback"
-        }),        
+        redirectUri: redirectUri,   
         usePKCE: false,
     }, discovery);
 
@@ -32,9 +34,9 @@ const LoginScreen = () => {
         if (result.type === 'success') {
             const authorizationCode = result.params.code;
             try {
-                const tokens = await getTokens(authorizationCode);
-                console.log("tokens:", tokens)
+                const tokens = await getTokens(authorizationCode, redirectUri);
                 await storeTokens(tokens); 
+                navigation.navigate('Main');
             } catch (error) {
                 console.error('Token Retrieval Error:', error);
             }
@@ -69,8 +71,9 @@ const LoginScreen = () => {
             const accessToken = await checkTokenValidity();
 
             if (accessToken) {
-                navigation.navigate('Main');
                 console.log('User is authenticated with access token:', accessToken);
+                navigation.navigate('Main');
+                console.log('Navigated to main');
             }
         };
 

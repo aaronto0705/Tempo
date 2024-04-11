@@ -18,7 +18,6 @@ const HomeScreen = () => {
       }
     };
     
-
     const handleCreatePlaylist = async () => {
         try {
           const accessToken = await AsyncStorage.getItem('accessToken');

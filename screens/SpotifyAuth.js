@@ -23,7 +23,7 @@ const getUserData = async (key) => {
   }
 };
 
-export const getTokens = async (authorizationCode, codeVerifier) => {
+export const getTokens = async (authorizationCode, redirectUri) => {
   try {
     const credsB64 = btoa(`${spotifyCredentials.clientId}:${spotifyCredentials.clientSecret}`);
     const tokenEndpoint = 'https://accounts.spotify.com/api/token';
@@ -36,7 +36,7 @@ export const getTokens = async (authorizationCode, codeVerifier) => {
         Authorization: `Basic ${credsB64}`,
       },
       body: `grant_type=authorization_code&code=${authorizationCode}&redirect_uri=${encodeURIComponent(
-        spotifyCredentials.redirectUri)}`,
+        redirectUri)}`,
     });
 
     const responseJson = await response.json();

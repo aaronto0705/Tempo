@@ -1,10 +1,6 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 export const spotifyCredentials = {
-  clientId: process.env.SPOTIFY_CLIENT_ID,
-  clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-  redirectUri: process.env.SPOTIFY_REDIRECT_URI
+    clientId: 'd6172fc8614948aeacebdcadf338de04',
+    clientSecret: '406c862d289c410691ef7df00acde84b',
 };
   
 export const scopesArr = [
