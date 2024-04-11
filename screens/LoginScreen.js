@@ -5,10 +5,8 @@ import { Entypo } from '@expo/vector-icons';
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 
 const LoginScreen = () => {
-
     const discovery = {
         authorizationEndpoint: 'https://accounts.spotify.com/authorize',
         tokenEndpoint: 'https://accounts.spotify.com/api/token',
@@ -16,83 +14,85 @@ const LoginScreen = () => {
 
     const [request, response, promptAsync] = useAuthRequest(
         {
-            clientId: '0619c1f2aa5d4d97b2da4d1a2926cf73',
+            clientId: 'd6172fc8614948aeacebdcadf338de04',
             scopes: [
-                "user-read-email",
-                "user-library-read",
-                "user-read-recently-played",
-                "user-top-read",
-                "playlist-read-private",
-                "playlist-read-collaborative",
-                "playlist-modify-public"
+                'user-read-email',
+                'user-library-read',
+                'user-read-recently-played',
+                'user-top-read',
+                'playlist-read-private',
+                'playlist-read-collaborative',
+                'playlist-modify-public'
             ],
-            usePKCE: false,
             redirectUri: makeRedirectUri({
-                scheme: 'exp',
-                path: "/spotify-auth-callback"
+                useProxy: true,
             }),
         },
         discovery
     );
 
-    useEffect(() => {
-        const checkLoginStatus = async () => {
-            const userLoggedIn = await AsyncStorage.getItem('userLoggedIn');
-            if (userLoggedIn) {
-                navigation.navigate('Main');
-            }
-        };
-
-        checkLoginStatus();
-    }, []);
-
-    useEffect(() => {
-        const getTokenFromCode = async () => {
-            try {
-                
-                const { code } = response.params;
-                const redirectUri = makeRedirectUri({ scheme: 'exp', path: '/spotify-auth-callback' });
-
-                // Set the headers with the correct Content-Type
-                const headers = {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                };
-
-                // Make a POST request to exchange the authorization code for an access token
-                const tokenResponse = await axios.post(
-                    'https://accounts.spotify.com/api/token',
-                    `grant_type=authorization_code&code=${code}&redirect_uri=${encodeURIComponent(redirectUri)}&client_id=0619c1f2aa5d4d97b2da4d1a2926cf73&client_secret=db6d29a6da284e878236d9c2f5dff05a`,
-                    { headers }
-                );
-
-                // Extract the access_token from the tokenResponse
-                const access_token = tokenResponse.data.access_token;
-
-                // Store the access_token in AsyncStorage
-                await AsyncStorage.setItem('accessToken', access_token);
-                await AsyncStorage.setItem('userLoggedIn', 'true');
-                console.log("access token:", access_token)
-
-                // Navigate to Main screen or wherever needed
-                navigation.navigate('Main');
-            } catch (error) {
-                console.error('Error exchanging code for access token:', error);
-            }
-        };
-
-        if (response?.type === 'success') {
-            getTokenFromCode();
-        }
-    }, [response]);
-
     const navigation = useNavigation();
 
-    const handlePress = () => {
-        console.log("Button pressed");
+    useEffect(() => {
+        const checkTokenValidity = async () => {
+          const accessToken = await AsyncStorage.getItem("accessToken");
+          const expirationDate = await AsyncStorage.getItem("accessTokenExpirationTime");
+          console.log("Access token:", accessToken);
+          console.log("Expiration time:", expirationDate);
+    
+          if(accessToken && expirationDate){
+            const currentTime = new Date().getTime();
+            if(currentTime < parseInt(expirationDate)){
+                navigation.navigate('Main');
+            } else {
+              // Token would be expired so we need to remove it from the async storage
+              AsyncStorage.removeItem("accessToken");
+              AsyncStorage.removeItem("accessTokenExpirationTime");
+            }
+          }
+        }
+    
+        checkTokenValidity();
+      },[])
+
+    useEffect(() => {
+        const handleAuthResponse = async () => {
+            if (response?.type === 'success') {
+                try {
+                    const response = await fetch('https://accounts.spotify.com/api/token', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                      },
+                      body: `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`,
+                    });
+              
+                    if (!response.ok) {
+                      throw new Error('Failed to obtain access token');
+                    }
+              
+                    const responseData = await response.json();
+                    const { access_token, expires_in } = responseData;
+              
+                    // Store access token and expiration time in AsyncStorage
+                    await AsyncStorage.setItem('accessToken', access_token);
+                    const expirationTime = new Date().getTime() + expires_in * 1000;
+                    await AsyncStorage.setItem('accessTokenExpirationTime', expirationTime.toString());
+              
+                    console.log('Access token stored:', access_token);
+                    navigation.navigate('Main');
+                  } catch (error) {
+                    console.error('Failed to fetch token:', error);
+                  }
+            }
+        };
+
+        handleAuthResponse();
+    }, [response]);
+
+    const authenticate = () => {
         promptAsync();
     };
-
-    console.log("Rendering LoginScreen");
 
     return (
         <LinearGradient colors={["#587E7D", "#587E7D"]} style={{ flex: 1 }}>
@@ -116,7 +116,7 @@ const LoginScreen = () => {
                 </Text>
                 <View style={{ height: 80 }} />
                 <Pressable
-                    onPress={handlePress}
+                    onPress={authenticate}
                     style={{
                         backgroundColor: "#1DB954",
                         padding: 10,
