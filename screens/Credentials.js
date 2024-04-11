@@ -1,8 +1,11 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 export const spotifyCredentials = {
-    clientId: 'd6172fc8614948aeacebdcadf338de04',
-    clientSecret: '406c862d289c410691ef7df00acde84b',
-    redirectUri: 'exp://192.168.1.175:8081'
-  };
+  clientId: process.env.SPOTIFY_CLIENT_ID,
+  clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+  redirectUri: process.env.SPOTIFY_REDIRECT_URI
+};
   
 export const scopesArr = [
     'user-modify-playback-state',
