@@ -34,14 +34,12 @@ const LoginScreen = () => {
             try {
                 const tokens = await getTokens(authorizationCode);
                 console.log("tokens:", tokens)
-                await storeTokens(tokens); // Store tokens in AsyncStorage
+                await storeTokens(tokens); 
             } catch (error) {
                 console.error('Token Retrieval Error:', error);
-                // Handle token retrieval error
             }
         } else {
         console.error('Authentication Error:', result.error);
-        // Handle authentication error
         }
     };
 
@@ -54,28 +52,26 @@ const LoginScreen = () => {
 
     const checkTokenValidity = async () => {
         const tokenExpirationTime = parseInt(await AsyncStorage.getItem('expirationTime'));
-
         if (!tokenExpirationTime) {
             return;
         }
 
         if (new Date().getTime() > tokenExpirationTime) {
-        await refreshTokens(); // Refresh tokens if expired
-        return await AsyncStorage.getItem('accessToken'); // Return refreshed access token
+            await refreshTokens(); // Refresh tokens if expired
+            return await AsyncStorage.getItem('accessToken'); 
         } else {
-        return await AsyncStorage.getItem('accessToken'); // Return existing access token
+            return await AsyncStorage.getItem('accessToken'); 
         }
     };
 
     useEffect(() => {
         const authenticateUser = async () => {
-        const accessToken = await checkTokenValidity();
+            const accessToken = await checkTokenValidity();
 
-        if (accessToken) {
-            // User is authenticated, navigate to main app screen
-            navigation.navigate('Main');
-            console.log('User is authenticated with access token:', accessToken);
-        }
+            if (accessToken) {
+                navigation.navigate('Main');
+                console.log('User is authenticated with access token:', accessToken);
+            }
         };
 
         authenticateUser();

@@ -13,8 +13,6 @@ const HomeScreen = () => {
     const handleCreatePlaylist = async () => {
         try {
           const accessToken = await AsyncStorage.getItem('accessToken');
-
-          // Spotify API endpoint URL for getting current user's profile
           const apiUrl = 'https://api.spotify.com/v1/me';
           
           const response = await fetch(apiUrl, {
@@ -23,14 +21,14 @@ const HomeScreen = () => {
               Authorization: `Bearer ${accessToken}`,
             },
           });
-                if (response.ok) {
-            const userData = await response.json(); 
-            console.log('User Data:', userData); 
+            if (response.ok) {
+                const userData = await response.json(); 
+                console.log('User Data:', userData); 
           } else {
-            console.error('Failed to fetch user data:', response.statusText);
+                console.error('Failed to fetch user data:', response.statusText);
           }
         } catch (error) {
-          console.error('Error fetching user data:', error);
+            console.error('Error fetching user data:', error);
         }
       };
       
