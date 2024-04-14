@@ -19,7 +19,7 @@ function Preference0() {
         style={styles.input}
         value={playlistName} 
         onChangeText={handleInputChange} 
-        placeholder="Playlist Name"
+        placeholder="Tempo Name"
         />
         <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference1')}>
             <Text style={[styles.buttonText]}>Next</Text>
