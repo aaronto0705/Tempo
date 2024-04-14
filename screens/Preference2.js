@@ -30,7 +30,7 @@ function Preference2() {
             </TouchableOpacity>
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {

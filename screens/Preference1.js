@@ -47,7 +47,7 @@ function Preference1() {
             </TouchableOpacity>
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {
