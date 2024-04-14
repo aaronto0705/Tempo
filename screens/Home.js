@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, FlatList, TouchableOpacity, StyleSheet, Text, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -25,38 +25,38 @@ function Home() {
       }
     };
     
-    const handleCreatePlaylist = async () => {
-        try {
-            const userId = await AsyncStorage.getItem('userId');
-            const accessToken = await AsyncStorage.getItem('accessToken');
-            const apiUrl = `https://api.spotify.com/v1/users/${userId}/playlists`;
+    // const handleCreatePlaylist = async () => {
+    //     try {
+    //         const userId = await AsyncStorage.getItem('userId');
+    //         const accessToken = await AsyncStorage.getItem('accessToken');
+    //         const apiUrl = `https://api.spotify.com/v1/users/${userId}/playlists`;
 
-            // Request payload for creating a new playlist
-            const playlistData = {
-                name: 'New Playlist',
-                description: 'New playlist description',
-                public: false,
-            };
+    //         // Request payload for creating a new playlist
+    //         const playlistData = {
+    //             name: 'New Playlist',
+    //             description: 'New playlist description',
+    //             public: false,
+    //         };
 
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(playlistData),
-            });
+    //         const response = await fetch(apiUrl, {
+    //             method: 'POST',
+    //             headers: {
+    //                 Authorization: `Bearer ${accessToken}`,
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify(playlistData),
+    //         });
 
-            if (response.ok) {
-                const playlist = await response.json();
-                console.log('New playlist created:', playlist);
-            } else {
-                console.error('Failed to create playlist:', response.statusText);
-            }
-        } catch (error) {
-            console.error('Error creating playlist:', error);
-        }
-    };
+    //         if (response.ok) {
+    //             const playlist = await response.json();
+    //             console.log('New playlist created:', playlist);
+    //         } else {
+    //             console.error('Failed to create playlist:', response.statusText);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error creating playlist:', error);
+    //     }
+    // };
     
     useEffect(() => {
         const fetchData = async () => {
