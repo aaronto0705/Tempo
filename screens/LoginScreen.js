@@ -36,7 +36,7 @@ const LoginScreen = () => {
             try {
                 const tokens = await getTokens(authorizationCode, redirectUri);
                 await storeTokens(tokens); 
-                navigation.navigate('Main');
+                navigation.navigate('Home');
             } catch (error) {
                 console.error('Token Retrieval Error:', error);
             }
@@ -72,8 +72,8 @@ const LoginScreen = () => {
 
             if (accessToken) {
                 console.log('User is authenticated with access token:', accessToken);
-                navigation.navigate('Main');
-                console.log('Navigated to main');
+                navigation.navigate('Home');
+                console.log('Navigated to home');
             }
         };
 
