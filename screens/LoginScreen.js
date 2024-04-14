@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Text, View, SafeAreaView, Pressable, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Entypo } from '@expo/vector-icons';
-import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { AccessTokenRequest, makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -15,6 +15,7 @@ const LoginScreen = () => {
     const [request, response, promptAsync] = useAuthRequest(
         {
             clientId: '0619c1f2aa5d4d97b2da4d1a2926cf73',
+            clientSecret: 'db6d29a6da284e878236d9c2f5dff05a',
             scopes: [
                 "user-read-email",
                 "user-library-read",
@@ -29,8 +30,9 @@ const LoginScreen = () => {
                 scheme: 'exp',
                 path: "/spotify-auth-callback"
             }),
+            responseType: 'token'
         },
-        discovery
+        { authorizationEndpoint: 'https://accounts.spotify.com/authorize', tokenEndpoint: 'https://accounts.spotify.com/api/token' }
     );
 
     useEffect(() => {
@@ -45,13 +47,11 @@ const LoginScreen = () => {
     }, []);
 
     useEffect(() => {
-        console.log(response)
-        console.log(request)
         if (response?.type === "success") {
-            console.log(response)
-            const { code } = response.params;
-            console.log(code)
-            AsyncStorage.setItem('userLoggedIn', 'true');
+            const { access_token } = response.params;
+            AsyncStorage.setItem('userLoggedIn', 'true');  
+            AsyncStorage.setItem('accessToken', access_token);
+            console.log("access token", access_token)
             
             navigation.navigate('Main');
         }
@@ -60,7 +60,6 @@ const LoginScreen = () => {
     const navigation = useNavigation();
 
     const handlePress = () => {
-        console.log("Button pressed");
         promptAsync();
     };
 
