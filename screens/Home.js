@@ -1,7 +1,10 @@
 import React from 'react';
 import { View, Image, FlatList, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 function Home() {
+
+    const navigation = useNavigation();
 
     const tempos = [
         { id: '1', name: 'playlist 1' },
@@ -19,6 +22,10 @@ function Home() {
                 resizeMode="cover"
             /> */}
             </View>
+
+            <Pressable onPress={() => navigation.navigate('Login')}>
+                <Text>Logout</Text>
+            </Pressable>
 
             <Text style={styles.text}>Current Tempos: </Text>
 
