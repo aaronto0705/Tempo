@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 function Preference1() {
+
+    const navigation = useNavigation();
 
     const [hours, setHours] = useState(0);
     const [minutes, setMinutes] = useState(0);

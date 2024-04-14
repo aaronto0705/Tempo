@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 function Preference3() {
+
+
   const [selectedOption, setSelectedOption] = useState('constant'); 
 
   const handleOptionPress = (option) => {
