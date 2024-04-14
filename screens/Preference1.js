@@ -23,6 +23,7 @@ function Preference1() {
                 <Text>Hours:</Text>
                 <TextInput
                 style={styles.input}
+                /*save value*/ 
                 value={hours.toString()}
                 onChangeText={changeHours}
                 keyboardType="numeric"
@@ -32,6 +33,7 @@ function Preference1() {
                 <Text>Minutes:</Text>
                 <TextInput
                 style={styles.input}
+                /*save value*/ 
                 value={minutes.toString()}
                 onChangeText={changeMinutes}
                 keyboardType="numeric"
