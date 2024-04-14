@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, FlatList, TouchableOpacity, StyleSheet, Text, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import axios from 'axios';
 
 // Initialize Firebase
 var firebaseConfig = {
@@ -32,13 +33,9 @@ async function saveUserData(userId, userData) {
 
 function Home() {
 
-    const navigation = useNavigation();
+    const [tempos, setTempos] = useState([]);
 
-    const tempos = [
-        { id: '1', name: 'playlist 1' },
-        { id: '2', name: 'playlist 2' },
-        { id: '3', name: 'playlist 3' }
-    ];
+    const navigation = useNavigation();
 
     const handleLogout = async () => {
         try {
@@ -81,6 +78,30 @@ function Home() {
         fetchData();
     }, []);
 
+
+    const getPlaylist = async () => {
+        const accessToken = await AsyncStorage.getItem("accessToken");
+        try {
+            const response = await axios({
+                method: "GET",
+                url: `https://api.spotify.com/v1/me/playlists`,
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            // Todo: Handle how we name these playlists and get those
+            const playlists = response.data.items.slice(0, 3);
+            setTempos(playlists);
+            console.log(playlists)
+        } catch (err) {
+            console.log(err.message);
+        }
+    };
+
+    useEffect(() => {
+        getPlaylist();
+    }, []);
+    console.log('playlists', tempos )
     return (
         <View style={styles.container}>
             <View style={styles.profileContainer}>
@@ -105,10 +126,11 @@ function Home() {
                     <View style={styles.itemContainer}>
                         <View style={[styles.rectangle]}>
                             <Text style={[styles.tempoText]}>{item.name}</Text>
-
-                            <TouchableOpacity style={styles.playButton}>
-                                <Text style={styles.playButtonText}>Listen</Text>
-                            </TouchableOpacity>
+                            <Pressable>
+                                <TouchableOpacity style={styles.playButton} onPress={() => navigation.navigate("Songs", {data: item})}>
+                                    <Text style={styles.playButtonText}>Listen</Text>
+                                </TouchableOpacity>
+                            </Pressable>
                         </View>
                     </View>
                 )}

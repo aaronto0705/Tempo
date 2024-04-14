@@ -1,6 +1,6 @@
 export const spotifyCredentials = {
-    clientId: '75c3731f814640ce91506a37bb63c1e7',
-    clientSecret: '5872ab44cb53462db0fdc6e3d616257d',
+    clientId: '0619c1f2aa5d4d97b2da4d1a2926cf73',
+    clientSecret: 'db6d29a6da284e878236d9c2f5dff05a',
 };
   
 export const scopesArr = [
