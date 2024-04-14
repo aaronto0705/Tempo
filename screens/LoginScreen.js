@@ -37,7 +37,7 @@ const LoginScreen = () => {
         const checkLoginStatus = async () => {
             const userLoggedIn = await AsyncStorage.getItem('userLoggedIn');
             if (userLoggedIn) {
-                navigation.navigate('Main');
+                navigation.navigate('Home');
             }
         };
 
@@ -53,7 +53,7 @@ const LoginScreen = () => {
             console.log(code)
             AsyncStorage.setItem('userLoggedIn', 'true');
             
-            navigation.navigate('Main');
+            navigation.navigate('Home');
         }
     }, [response]);
 
