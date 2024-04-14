@@ -1,15 +1,16 @@
-import { StyleSheet, Text, View, Button } from 'react-native'
+import { StyleSheet, Text, View, Button, Pressable } from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import axios from 'axios'
-import { Audio } from 'expo-av'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { ScrollView } from 'react-native-web';
+import { Ionicons } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
+
+
 
 const Songs = () => {
-
-    const [tracks, setTracks] = useState([]);
-    const [currentTrackIndex, setCurrentTrackIndex] = useState(-1);
-    const [currentSound, setCurrentSound] = useState(null);
 
     const navigation = useNavigation();
     const route = useRoute();
@@ -27,19 +28,31 @@ const Songs = () => {
                 },
                 body: JSON.stringify({
                     context_uri: uri,
-                    offset: {position: 0}
+                    offset: { position: 0 }
                 })
             })
+            console.log(playback)
         } catch (err) {
             console.log(err);
         }
     }
 
     return (
-        <View>
-            <Text>SongsScreen</Text>
-            <Button title="Start Music" onPress={startMusic} />
-        </View>
+        <LinearGradient colors={['#000000', '#000000']} style={{ flex: 1 }}>
+            <Pressable
+                onPress={startMusic}
+                style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: 30,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "#1DB954",
+                }}
+              >
+                <Entypo name="controller-play" size={24} color="white" />
+              </Pressable>
+        </LinearGradient>
     )
 }
 
