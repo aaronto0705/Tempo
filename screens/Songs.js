@@ -14,56 +14,26 @@ const Songs = () => {
     const navigation = useNavigation();
     const route = useRoute();
 
-    async function getSongs() {
+    async function startMusic() {
         const accessToken = await AsyncStorage.getItem("accessToken");
-        const playlist_id = route.params.data.id;
+        const uri = route.params.data.uri;
+        console.log(uri)
         try {
-            const response = await axios({
-                method: "GET",
-                url: `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`,
+            const playback = await fetch('https://api.spotify.com/v1/me/player/play', {
+                method: 'PUT',
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
                 },
-            });
-            setTracks(response.data.items);
-            console.log('response vals', response.data.items);
-        } catch (err) {
-            console.log(err.message);
-        }
-    }
-
-    const startMusic = async () => {
-        if (tracks.length > 0 && currentTrackIndex === -1) {
-            setCurrentTrackIndex(0);
-            await play(tracks[0].track);
-        }
-    }
-
-    const play = async (nextTrack) => {
-        const url = nextTrack.preview_url;
-        console.log("URL IS", url)
-        try {
-            await Audio.setAudioModeAsync({
-                playsInSilentModeIOS: true,
-                staysActiveInBackground: true,
-                shouldDuckAndroid: false,
+                body: JSON.stringify({
+                    context_uri: uri,
+                    offset: {position: 0}
+                })
             })
-            const { sound, status } = await Audio.Sound.createAsync({
-                uri: url
-            }, {
-                shouldPlay: true, isLooping: false
-            }
-            )
-            setCurrentSound(sound);
-            await sound.playAsync();
         } catch (err) {
-            console.log(err.message)
+            console.log(err);
         }
     }
-
-    useEffect(() => {
-        getSongs();
-    }, []);
 
     return (
         <View>
