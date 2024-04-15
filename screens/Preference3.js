@@ -10,6 +10,13 @@ function Preference3() {
     setSelectedOption(option);
   };
 
+  // on create, run create playlist function
+  // then run get reccomendation function
+  // then run add to playlist function
+  // later, combine with Leas new stuff and add playlist name to firebase for the user
+    // 
+  // home screen should get userId from firebase and retrieve all playlists they have
+
   return (
     <View style={styles.container}>
         <Text style={styles.questionText}>Pace during the run:</Text>
