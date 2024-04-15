@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Picker, TouchableOpacity, Text } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import {Picker} from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 
 function Preference4() {
