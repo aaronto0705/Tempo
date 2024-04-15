@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 function Preference3() {
 
+  const navigation = useNavigation();
 
   const [selectedOption, setSelectedOption] = useState('constant'); 
 
@@ -33,9 +35,9 @@ function Preference3() {
           <Text style={[styles.buttonText, selectedOption === 'speedUp' && styles.selectedButtonText]}>Speed up</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.buttonContainer} >
-                <Text style={[styles.createButtonText]}>Create</Text>
-    </TouchableOpacity>
+      <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference4')}>
+                <Text style={[styles.nextButtonText]}>Next</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -79,13 +81,12 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: 'center',
     borderRadius: 10,
-    marginTop: 60,
   },
-createButtonText: {
-    color: 'white', 
-    fontSize: 16, 
-    fontWeight: 'bold', 
-},
+  nextButtonText: {
+      color: 'white', 
+      fontSize: 16, 
+      fontWeight: 'bold', 
+  },
 });
 
 export default Preference3;
