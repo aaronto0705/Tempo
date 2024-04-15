@@ -12,6 +12,15 @@ function Preference0() {
         setPlaylistName(text);
     }
 
+    const handleNextPress = async () => {
+      try {
+        await AsyncStorage.setItem('Preference0', playlistName);
+        navigation.navigate('Preference1');
+      } catch (error) {
+        console.error('Error storing playlist name:', error);
+      }
+    }
+
     return (
       <View style={styles.container}>
         <Text style={styles.text}>Playlist Name: </Text>
@@ -21,7 +30,7 @@ function Preference0() {
         onChangeText={handleInputChange} 
         placeholder="Tempo Name"
         />
-        <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference1')}>
+        <TouchableOpacity style={styles.buttonContainer} onPress={handleNextPress}>
             <Text style={[styles.buttonText]}>Next</Text>
         </TouchableOpacity>
       </View>

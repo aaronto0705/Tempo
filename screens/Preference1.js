@@ -19,6 +19,19 @@ function Preference1() {
         setMinutes(minutesInput);
     }
 
+    const handleNextPress = async () => {
+        try {
+            const hoursString = hours.toString();
+            const minutesString = minutes.toString();
+            await AsyncStorage.setItem('Preference1h', hoursString);
+            await AsyncStorage.setItem('Preference1m', minutesString);
+            navigation.navigate('Preference2');
+        } catch (error) {
+            console.error('Error storing hours and minutes:', error);
+        }
+      };
+      
+
     return (
         <View style={styles.container}>
             <Text style={styles.questionText}>How long do you want to run?</Text>
@@ -42,7 +55,7 @@ function Preference1() {
                 keyboardType="numeric"
                 />
             </View>
-            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference2')}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={handleNextPress}>
                 <Text style={[styles.buttonText]}>Next</Text>
             </TouchableOpacity>
         </View>

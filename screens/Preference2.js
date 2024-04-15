@@ -13,6 +13,16 @@ function Preference2() {
         setMinutes(minutesInput);
     }
 
+    const handleNextPress = async () => {
+        try {
+            const minutesString = minutes.toString();
+            await AsyncStorage.setItem('Preference2', minutesString);
+            navigation.navigate('Preference3');
+        } catch (error) {
+            console.error('Error storing playlist name:', error);
+        }
+      }
+
     return (
         <View style={styles.container}>
             <Text style={styles.questionText}>Average Minutes per Mile?</Text>
@@ -25,7 +35,7 @@ function Preference2() {
                 keyboardType="numeric"
                 />
             </View>
-            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference3')}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={handleNextPress}>
                 <Text style={[styles.buttonText]}>Next</Text>
             </TouchableOpacity>
         </View>
