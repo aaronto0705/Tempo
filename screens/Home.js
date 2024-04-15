@@ -119,7 +119,7 @@ function Home() {
                 keyExtractor={(tempo) => tempo.id}
             />
 
-            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference1')}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference0')}>
                 <Text style={[styles.buttonText]}>CREATE A TEMPO</Text>
             </TouchableOpacity>
 
