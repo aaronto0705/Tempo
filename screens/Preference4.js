@@ -52,7 +52,7 @@ function Preference4() {
         try {
             const hours = parseInt(await AsyncStorage.getItem('Preference1h')) || 0;
             const minutes = parseInt(await AsyncStorage.getItem('Preference1m')) || 0;
-            const minutePerMile = parseFloat(await AsyncStorage.getItem('Preference2')) || 0;
+            // const minutePerMile = parseFloat(await AsyncStorage.getItem('Preference2')) || 0;
             const genre = await AsyncStorage.getItem('Preference4');
         
             // Calculate total duration in minutes
