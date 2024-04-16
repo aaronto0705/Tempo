@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Preference4() {
 
@@ -16,8 +17,8 @@ function Preference4() {
             const apiUrl = `https://api.spotify.com/v1/users/${userId}/playlists`;
 
             const name = await AsyncStorage.getItem('Preference0');
-            const pace = await AsyncStorage.setItem('Preference3');
-            const genre = await AsyncStorage.setItem('Preference4');
+            const pace = await AsyncStorage.getItem('Preference3');
+            const genre = await AsyncStorage.getItem('Preference4');
 
             // Request payload for creating a new playlist
             const playlistData = {
@@ -60,8 +61,9 @@ function Preference4() {
             // Calculate number of songs (limit)
             const limit = Math.ceil(totalMinutes / 3);
         
-            // Calculate target BPM for target_tempo
-            const targetBPM = Math.round(2000 / minutePerMile);
+            // Calculate target BPM for target_tempo (hardcoded, don't know what algorithm to use)
+            // Should be using minutePerMile here but idk what the calculation should be
+            const targetBPM = 150
             const minTempo = targetBPM - 5;
             const maxTempo = targetBPM + 5;
         
