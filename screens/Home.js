@@ -8,14 +8,10 @@ import axios from 'axios';
 import { firebaseConfig } from './Credentials';
 import { useFocusEffect } from '@react-navigation/native';
 
-// Initialize Firebase
-
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-// Save user data to Firestore
 
 function Home() {
     
@@ -77,7 +73,6 @@ function Home() {
                     const userData = await response.json();
                     console.log('User Data:', userData);
                     saveUserData(userData.id, userData);
-                    console.log('db data', userData);
                     await AsyncStorage.setItem('userId', userData.id);
                     await AsyncStorage.setItem('userData', JSON.stringify(userData));
                 } else {
@@ -109,9 +104,7 @@ function Home() {
                 if (docSnap.exists()) {
                     const firebasePlaylists = docSnap.data().playlists
                     const matchingPlaylists = playlists.items.filter(item => firebasePlaylists.includes(item.id));
-                    console.log("Matching Playlists:", matchingPlaylists);
                     setTempos(matchingPlaylists);
-                    console.log(matchingPlaylists)
 
                     const urls = {}
                     await Promise.all(matchingPlaylists.map(async (item) => {
@@ -153,7 +146,6 @@ function Home() {
             return
         }, [])
     );
-    console.log('playlists', tempos )
     return (
         <View style={styles.container}>
             <View style={styles.profileContainer}>
