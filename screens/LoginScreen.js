@@ -47,7 +47,9 @@ const LoginScreen = () => {
 
     const storeTokens = async (tokens) => {
         await AsyncStorage.setItem('accessToken', tokens.access_token);
-        await AsyncStorage.setItem('refreshToken', tokens.refresh_token);
+        if (tokens.refresh_token != "undefined") {
+            await AsyncStorage.setItem('refreshToken', tokens.refresh_token);
+        }
         const expirationTime = new Date().getTime() + tokens.expires_in * 1000;
         await AsyncStorage.setItem('expirationTime', expirationTime.toString());
     };
