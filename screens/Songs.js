@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button, Pressable, Image, FlatList } from 'react-native'
+import { StyleSheet, Text, View, Pressable, Image, FlatList } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react'
 import { useRoute } from '@react-navigation/native'
@@ -42,7 +42,7 @@ const Songs = () => {
         console.log(playlistId)
         console.log(accessToken)
         try {
-            url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks/`// +  
+            var url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks/`// +  
             const response = await axios({
                 method: "GET",
                 url: url,
@@ -52,7 +52,7 @@ const Songs = () => {
             });
             const cursongs = response.data.items
             const newSongs = []
-            for (i = 0; i < cursongs.length; i++) {
+            for (let i = 0; i < cursongs.length; i++) {
                 let song = cursongs[i].track
                 const artists = song.artists || [{'name': 'Unknown'}];
                 newSongs.push({ 'artist': artists, 'name': song.name })

@@ -21,8 +21,7 @@ function Home() {
     
     const [tempos, setTempos] = useState([]);
     const [playlistImgs, setPlaylistImgs] = useState({});
-    const [userData, setUserData] = useState({});
-    const [updateFlag, setUpdateFlag] = useState(false);
+    const [, setUserData] = useState({});
     
     const navigation = useNavigation();
 
@@ -126,7 +125,6 @@ function Home() {
             } catch (e) {
                 console.log(e)
             }
-            setUpdateFlag(prevFlag => !prevFlag)
         } catch (err) {
             console.log(err.message);
         }
