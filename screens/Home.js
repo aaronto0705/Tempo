@@ -159,10 +159,10 @@ function Home() {
             </View>
 
             <Pressable onPress={handleLogout}>
-                <Text>Logout</Text>
+                <Text style={styles.logoutButton}>Logout</Text>
             </Pressable>
 
-            <Text style={styles.text}>Current Tempos: </Text>
+            <Text style={styles.text}>Your Tempos</Text>
 
             <FlatList
                 data={tempos}
@@ -201,8 +201,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#14333F',
     },
     profileContainer: {
-        width: 50,
-        height: 50,
+        width: 60,
+        height: 60,
         borderRadius: 50,
         backgroundColor: "white",
         marginBottom: 70,
@@ -210,11 +210,14 @@ const styles = StyleSheet.create({
     profilePic: {
         width: 60,
         height: 60,
-        borderRadius: 25,
+        borderRadius: 50,
+    },
+    logoutButton: {
+        color: 'white',
     },
     text: {
         color: 'white',
-        fontSize: 16,
+        fontSize: 25,
         fontWeight: 'bold',
         marginBottom: 20,
     },
@@ -253,12 +256,14 @@ const styles = StyleSheet.create({
         width: '100%',
         paddingVertical: 15,
         alignItems: 'center',
-        borderRadius: 10,
+        borderRadius: 15,
+        marginBottom: 30,
     },
     buttonText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: 'bold',
+        margin: 10,
     },
 });
 
