@@ -32,11 +32,13 @@ function Home() {
             const docSnap = await getDoc(docRef, userData);
             if (docSnap.exists()) {
                 console.log("Document data:", docSnap.data());
+                setUserData(docSnap.data());
+                return;
+            } else {
+                throw new Error("Document does not exist");
             }
-            setUserData(docSnap.data());
-            return;
         } catch (e) {
-            console.log(e)
+            console.log(e);
         }
         try {
             const docRef = doc(db, 'users', userId);

@@ -1,21 +1,15 @@
 import { StyleSheet, Text, View, Button, Pressable, Image, FlatList } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react'
-import { useNavigation, useRoute } from '@react-navigation/native'
+import { useRoute } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { ScrollView } from 'react-native-web';
-import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import axios from 'axios';
-
-
 
 const Songs = () => {
 
     const [songs, setSongs] = useState([]);
 
-    const navigation = useNavigation();
     const route = useRoute();
     const imageUri = route.params.imageUri;
     console.log(route.params.data)
@@ -49,8 +43,6 @@ const Songs = () => {
         console.log(accessToken)
         try {
             url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks/`// +  
-            // `market=ES` +
-            // `&fields=items(added_by.id,track(name,href,album(name,href)))`
             const response = await axios({
                 method: "GET",
                 url: url,
@@ -62,25 +54,18 @@ const Songs = () => {
             const newSongs = []
             for (i = 0; i < cursongs.length; i++) {
                 let song = cursongs[i].track
-                // console.log(song.artists)
-                console.log(song.artists)
-                // const artists = song.artists || [{'name': 'Unknown'}];
-                // newSongs.push({ 'artist': artists, 'name': song.name })
-                // console.log(artists)
-                // setSongs(songs => [...songs, { 'artist': artists, 'name': song.name }]);
-                //console.log(song)
-                // console.log(song.artists)
+                const artists = song.artists || [{'name': 'Unknown'}];
+                newSongs.push({ 'artist': artists, 'name': song.name })
+                setSongs(songs => [...songs, { 'artist': artists, 'name': song.name }]);
             }
-            setSongs(newSongs)
-            console.log('songs added', songs)
-        } catch (e) {
+            console.log('new songs', newSongs)
+        } catch (e) { 
             console.log(e)
         }
     }
 
     useEffect(() => {
         getSongs();
-        // console.log('songs', songs) 
     }, [])
 
     return (
@@ -103,6 +88,7 @@ const Songs = () => {
                     <Entypo name="controller-play" size={24} color="white" />
                 </Pressable>
             </View>
+            <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginTop: 80 }}>Songs</Text>
             <View>
                 <FlatList
                     data={songs}
@@ -111,9 +97,6 @@ const Songs = () => {
                         <View style={styles.itemContainer}>
                             <View style={[styles.rectangle]}>
                                 <Text style={[styles.tempoText]}>{item.name}</Text>
-                                {item.artists.map(artist => (
-                                    <Text style={[styles.tempoText]} key={artist.name}>{artist.name}</Text>
-                                ))}
                                 <Pressable>
                                 </Pressable>
                             </View>
