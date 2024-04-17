@@ -9,6 +9,7 @@ import Preference1 from './screens/Preference1';
 import Preference2 from './screens/Preference2';
 import Preference3 from './screens/Preference3';
 import Preference4 from './screens/Preference4';
+import Songs from './screens/Songs';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ export default function App() {
         <Stack.Screen name="Preference2" component={Preference2} />
         <Stack.Screen name="Preference3" component={Preference3} />
         <Stack.Screen name="Preference4" component={Preference4} />
+        <Stack.Screen name="Songs" component={Songs} />
       </Stack.Navigator>
     </NavigationContainer>
   );

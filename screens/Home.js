@@ -1,44 +1,48 @@
-import React, { useEffect } from 'react';
-import { View, FlatList, TouchableOpacity, StyleSheet, Text, Pressable } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, FlatList, TouchableOpacity, StyleSheet, Text, Pressable, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
+import axios from 'axios';
+import { firebaseConfig } from './Credentials';
+import { useFocusEffect } from '@react-navigation/native';
 
-// Initialize Firebase
-var firebaseConfig = {
-    apiKey: "AIzaSyBrW9d8J2cxVJIqx0WYGbV_n3p65G2P0nw",
-    projectId: "tempo-9e317",
-    storageBucket: "tempo-9e317.appspot.com",
-    messagingSenderId: "85989036364",
-    appId: "1:85989036364:ios:345da87677feedd4133fe9"
-};
-
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-// Save user data to Firestore
-async function saveUserData(userId, userData) {
-    try {
-        const docRef = doc(db, 'users', userId);
-        await setDoc(docRef, userData);
-        console.log("Successfully set user data in Firestore", userId)
-    } catch (e){
-        console.log(e)
-    }
-}
 
 function Home() {
-
+    
+    const [tempos, setTempos] = useState([]);
+    const [playlistImgs, setPlaylistImgs] = useState({});
+    const [, setUserData] = useState({});
+    
     const navigation = useNavigation();
 
-    const tempos = [
-        { id: '1', name: 'playlist 1' },
-        { id: '2', name: 'playlist 2' },
-        { id: '3', name: 'playlist 3' }
-    ];
+    async function saveUserData(userId, userData) {
+        try {
+            const docRef = doc(db, 'users', userId);
+            const docSnap = await getDoc(docRef, userData);
+            if (docSnap.exists()) {
+                console.log("Document data:", docSnap.data());
+                setUserData(docSnap.data());
+                return;
+            } else {
+                throw new Error("Document does not exist");
+            }
+        } catch (e) {
+            console.log(e);
+        }
+        try {
+            const docRef = doc(db, 'users', userId);
+            await setDoc(docRef, userData);
+            console.log("Successfully set user data in Firestore", userId)
+        } catch (e){
+            console.log(e)
+        }
+    }
 
     const handleLogout = async () => {
         try {
@@ -81,6 +85,67 @@ function Home() {
         fetchData();
     }, []);
 
+
+    const getPlaylist = async () => {
+        const accessToken = await AsyncStorage.getItem("accessToken");
+        try {
+            const response = await axios({
+                method: "GET",
+                url: `https://api.spotify.com/v1/me/playlists`,
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            const userId = await AsyncStorage.getItem('userId');
+            const playlists = response.data;
+            try {
+                const docRef = doc(db, 'users', userId);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const firebasePlaylists = docSnap.data().playlists
+                    const matchingPlaylists = playlists.items.filter(item => firebasePlaylists.includes(item.id));
+                    setTempos(matchingPlaylists);
+
+                    const urls = {}
+                    await Promise.all(matchingPlaylists.map(async (item) => {
+                        const url = await getImageURI(item.id);
+                        urls[item.id] = url;
+                    }));
+                    setPlaylistImgs(urls);
+                } else {
+                    console.log("No such document! Please sign in again")
+                }
+            } catch (e) {
+                console.log(e)
+            }
+        } catch (err) {
+            console.log(err.message);
+        }
+    };
+
+    async function getImageURI(id) {
+        const accessToken = await AsyncStorage.getItem("accessToken");
+        try {
+            const response = await axios({
+                method: "GET",
+                url: `https://api.spotify.com/v1/playlists/${id}/images`,
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            console.log('image',  response.data[0].url)
+            return response.data[0].url;
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
+
+    useFocusEffect(
+        React.useCallback(() => {
+            getPlaylist();
+            return
+        }, [])
+    );
     return (
         <View style={styles.container}>
             <View style={styles.profileContainer}>
@@ -104,11 +169,13 @@ function Home() {
                 renderItem={({ item }) => (
                     <View style={styles.itemContainer}>
                         <View style={[styles.rectangle]}>
+                            <Image source={{ uri: playlistImgs[item.id] }} style={{ width: 50, height: 50 }} />
                             <Text style={[styles.tempoText]}>{item.name}</Text>
-
-                            <TouchableOpacity style={styles.playButton}>
-                                <Text style={styles.playButtonText}>Listen</Text>
-                            </TouchableOpacity>
+                            <Pressable>
+                                <TouchableOpacity style={styles.playButton} onPress={() => navigation.navigate("Songs", {data: item, imageUri: playlistImgs[item.id]})}>
+                                    <Text style={styles.playButtonText}>Listen</Text>
+                                </TouchableOpacity>
+                            </Pressable>
                         </View>
                     </View>
                 )}

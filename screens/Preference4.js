@@ -3,6 +3,13 @@ import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import { firebaseConfig } from './Credentials';
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
 
 function Preference4() {
 
@@ -39,6 +46,7 @@ function Preference4() {
             if (response.ok) {
                 const playlist = await response.json();
                 await AsyncStorage.setItem('PlaylistId', playlist.id);
+                console.log('PLAYLIST ID', playlist.id)
                 console.log('New playlist created:', playlist);
             } else {
                 console.error('Failed to create playlist:', response.statusText);
@@ -139,6 +147,21 @@ function Preference4() {
             console.error('Error adding songs to playlist:', error);
         }
     };
+
+    const insertDB = async () => {
+        const userId = await AsyncStorage.getItem('userId');
+        const dbRef = doc(db, 'users', userId);
+        const docSnap = await getDoc(dbRef);
+        if (docSnap.exists()) {
+            var existing = docSnap.data().playlists || [];
+            existing.push(await AsyncStorage.getItem('PlaylistId'));
+            try {
+                await setDoc(dbRef, {playlists: existing}, {merge: true});
+            } catch (e) {
+                console.log(e)
+            }
+        }
+    }
     
 
     const handleNextPress = async () => {
@@ -146,6 +169,7 @@ function Preference4() {
             await AsyncStorage.setItem('Preference4', selectedGenre);
             await handleCreatePlaylist();
             await getRecommendations();
+            await insertDB();
             navigation.navigate('Home');
         } 
         catch (error) {
