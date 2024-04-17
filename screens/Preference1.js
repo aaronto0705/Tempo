@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Preference1() {
 
@@ -18,6 +19,19 @@ function Preference1() {
         const minutesInput = parseInt(text) || 0;
         setMinutes(minutesInput);
     }
+
+    const handleNextPress = async () => {
+        try {
+            const hoursString = hours.toString();
+            const minutesString = minutes.toString();
+            await AsyncStorage.setItem('Preference1h', hoursString);
+            await AsyncStorage.setItem('Preference1m', minutesString);
+            navigation.navigate('Preference2');
+        } catch (error) {
+            console.error('Error storing hours and minutes:', error);
+        }
+      };
+      
 
     return (
         <View style={styles.container}>
@@ -42,7 +56,7 @@ function Preference1() {
                 keyboardType="numeric"
                 />
             </View>
-            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference2')}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={handleNextPress}>
                 <Text style={[styles.buttonText]}>Next</Text>
             </TouchableOpacity>
         </View>
