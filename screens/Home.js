@@ -24,6 +24,7 @@ async function saveUserData(userId, userData) {
     try {
         const docRef = doc(db, 'users', userId);
         await setDoc(docRef, userData);
+        console.log("Successfully set user data in Firestore", userId)
     } catch (e){
         console.log(e)
     }
