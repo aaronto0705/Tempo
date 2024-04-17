@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Preference3() {
 
@@ -11,6 +12,15 @@ function Preference3() {
   const handleOptionPress = (option) => {
     setSelectedOption(option);
   };
+
+  const handleNextPress = async () => {
+    try {
+      await AsyncStorage.setItem('Preference3', selectedOption);
+      navigation.navigate('Preference4');
+    } catch (error) {
+      console.error('Error storing playlist name:', error);
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -35,7 +45,7 @@ function Preference3() {
           <Text style={[styles.buttonText, selectedOption === 'speedUp' && styles.selectedButtonText]}>Speed up</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference4')}>
+      <TouchableOpacity style={styles.buttonContainer} onPress={handleNextPress}>
                 <Text style={[styles.nextButtonText]}>Next</Text>
       </TouchableOpacity>
     </View>

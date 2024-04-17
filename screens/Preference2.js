@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Preference2() {
 
@@ -12,6 +13,16 @@ function Preference2() {
         const minutesInput = parseInt(text) || 0;
         setMinutes(minutesInput);
     }
+
+    const handleNextPress = async () => {
+        try {
+            const minutesString = minutes.toString();
+            await AsyncStorage.setItem('Preference2', minutesString);
+            navigation.navigate('Preference3');
+        } catch (error) {
+            console.error('Error storing playlist name:', error);
+        }
+      }
 
     return (
         <View style={styles.container}>
@@ -25,7 +36,7 @@ function Preference2() {
                 keyboardType="numeric"
                 />
             </View>
-            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference3')}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={handleNextPress}>
                 <Text style={[styles.buttonText]}>Next</Text>
             </TouchableOpacity>
         </View>
