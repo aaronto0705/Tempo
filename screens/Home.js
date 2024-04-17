@@ -18,6 +18,7 @@ function Home() {
     const [tempos, setTempos] = useState([]);
     const [playlistImgs, setPlaylistImgs] = useState({});
     const [, setUserData] = useState({});
+    const [profilePic, setProfilePic] = useState('')
     
     const navigation = useNavigation();
 
@@ -75,6 +76,7 @@ function Home() {
                     saveUserData(userData.id, userData);
                     await AsyncStorage.setItem('userId', userData.id);
                     await AsyncStorage.setItem('userData', JSON.stringify(userData));
+                    setProfilePic(userData.images[0]?.url);
                 } else {
                     console.error('Failed to fetch user data:', response.statusText);
                 }
@@ -149,12 +151,11 @@ function Home() {
     return (
         <View style={styles.container}>
             <View style={styles.profileContainer}>
-                {/* GET SPOTIFY PROFILE PIC 
-            <Image
-                source={require('./path_to_your_image/profile_pic.png')} 
-                style={styles.profilePic}
-                resizeMode="cover"
-            /> */}
+                <Image
+                    source={{uri: profilePic}} 
+                    style={styles.profilePic}
+                    resizeMode="cover"
+                /> 
             </View>
 
             <Pressable onPress={handleLogout}>
@@ -207,8 +208,8 @@ const styles = StyleSheet.create({
         marginBottom: 70,
     },
     profilePic: {
-        width: 50,
-        height: 50,
+        width: 60,
+        height: 60,
         borderRadius: 25,
     },
     text: {
