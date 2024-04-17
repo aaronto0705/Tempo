@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { initializeApp } from 'firebase/app';
 import { Text, View, SafeAreaView, Pressable, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Entypo } from '@expo/vector-icons';
@@ -8,17 +7,6 @@ import { useAuthRequest, makeRedirectUri } from 'expo-auth-session';
 import { spotifyCredentials, scopesArr } from './Credentials';
 import { getTokens, refreshTokens } from './SpotifyAuth'; 
 import { useNavigation } from '@react-navigation/native';
-
-// Initialize Firebase
-var firebaseConfig = {
-    apiKey: "AIzaSyBrW9d8J2cxVJIqx0WYGbV_n3p65G2P0nw",
-    projectId: "tempo-9e317",
-    storageBucket: "tempo-9e317.appspot.com",
-    messagingSenderId: "85989036364",
-    appId: "1:85989036364:ios:345da87677feedd4133fe9"
-  };
-  
-const app = initializeApp(firebaseConfig);
 
 const LoginScreen = () => {
     const navigation = useNavigation();
