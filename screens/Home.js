@@ -2,6 +2,27 @@ import React, { useEffect } from 'react';
 import { View, FlatList, TouchableOpacity, StyleSheet, Text, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, set } from "firebase/database";
+
+// Initialize Firebase
+var firebaseConfig = {
+    apiKey: "AIzaSyBrW9d8J2cxVJIqx0WYGbV_n3p65G2P0nw",
+    projectId: "tempo-9e317",
+    storageBucket: "tempo-9e317.appspot.com",
+    messagingSenderId: "85989036364",
+    appId: "1:85989036364:ios:345da87677feedd4133fe9"
+  };
+  
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
+
+// Save user data to Firestore
+function saveUserData(userId, userData) {
+    set(ref(db, 'users/' + userId), userData);
+}
 
 function Home() {
 
@@ -74,6 +95,7 @@ function Home() {
                 if (response.ok) {
                     const userData = await response.json();
                     console.log('User Data:', userData);
+                    saveUserData(userData.id, userData);
                     await AsyncStorage.setItem('userId', userData.id);
                 } else {
                     console.error('Failed to fetch user data:', response.statusText);
@@ -119,7 +141,7 @@ function Home() {
                 keyExtractor={(tempo) => tempo.id}
             />
 
-            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference0')}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference1')}>
                 <Text style={[styles.buttonText]}>CREATE A TEMPO</Text>
             </TouchableOpacity>
 
