@@ -3,23 +3,12 @@ import { View, FlatList, TouchableOpacity, StyleSheet, Text, Pressable, Image } 
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 import axios from 'axios';
-import { initializeApp } from "firebase/app";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { firebaseConfig } from './Credentials';
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { useFocusEffect } from '@react-navigation/native';
 
 // Initialize Firebase
-var firebaseConfig = {
-    apiKey: "AIzaSyBrW9d8J2cxVJIqx0WYGbV_n3p65G2P0nw",
-    projectId: "tempo-9e317",
-    storageBucket: "tempo-9e317.appspot.com",
-    messagingSenderId: "85989036364",
-    appId: "1:85989036364:ios:345da87677feedd4133fe9"
-};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -27,22 +16,36 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // Save user data to Firestore
-async function saveUserData(userId, userData) {
-    try {
-        const docRef = doc(db, 'users', userId);
-        await setDoc(docRef, userData);
-        console.log("Successfully set user data in Firestore", userId)
-    } catch (e){
-        console.log(e)
-    }
-}
 
 function Home() {
-
+    
     const [tempos, setTempos] = useState([]);
     const [playlistImgs, setPlaylistImgs] = useState({});
-
+    const [userData, setUserData] = useState({});
+    const [updateFlag, setUpdateFlag] = useState(false);
+    
     const navigation = useNavigation();
+
+    async function saveUserData(userId, userData) {
+        try {
+            const docRef = doc(db, 'users', userId);
+            const docSnap = await getDoc(docRef, userData);
+            if (docSnap.exists()) {
+                console.log("Document data:", docSnap.data());
+            }
+            setUserData(docSnap.data());
+            return;
+        } catch (e) {
+            console.log(e)
+        }
+        try {
+            const docRef = doc(db, 'users', userId);
+            await setDoc(docRef, userData);
+            console.log("Successfully set user data in Firestore", userId)
+        } catch (e){
+            console.log(e)
+        }
+    }
 
     const handleLogout = async () => {
         try {
@@ -73,6 +76,7 @@ function Home() {
                     const userData = await response.json();
                     console.log('User Data:', userData);
                     saveUserData(userData.id, userData);
+                    console.log('db data', userData);
                     await AsyncStorage.setItem('userId', userData.id);
                     await AsyncStorage.setItem('userData', JSON.stringify(userData));
                 } else {
@@ -120,6 +124,7 @@ function Home() {
             } catch (e) {
                 console.log(e)
             }
+            setUpdateFlag(prevFlag => !prevFlag)
         } catch (err) {
             console.log(err.message);
         }
@@ -142,9 +147,12 @@ function Home() {
         }
     }
 
-    useEffect(() => {
-        getPlaylist();
-    }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+            getPlaylist();
+            return
+        }, [])
+    );
     console.log('playlists', tempos )
     return (
         <View style={styles.container}>
