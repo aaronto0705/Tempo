@@ -39,6 +39,7 @@ function Preference4() {
             if (response.ok) {
                 const playlist = await response.json();
                 await AsyncStorage.setItem('PlaylistId', playlist.id);
+                console.log('PLAYLIST ID', playlist.id)
                 console.log('New playlist created:', playlist);
             } else {
                 console.error('Failed to create playlist:', response.statusText);

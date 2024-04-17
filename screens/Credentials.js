@@ -19,3 +19,10 @@ export const scopesArr = [
     'user-top-read'
 ];
   
+export const firebaseConfig = {
+    apiKey: "AIzaSyBrW9d8J2cxVJIqx0WYGbV_n3p65G2P0nw",
+    projectId: "tempo-9e317",
+    storageBucket: "tempo-9e317.appspot.com",
+    messagingSenderId: "85989036364",
+    appId: "1:85989036364:ios:345da87677feedd4133fe9"
+}

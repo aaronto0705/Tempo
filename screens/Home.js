@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, TouchableOpacity, StyleSheet, Text, Pressable } from 'react-native';
+import { View, FlatList, TouchableOpacity, StyleSheet, Text, Pressable, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import axios from 'axios';
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { firebaseConfig } from './Credentials';
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 // Initialize Firebase
 var firebaseConfig = {
@@ -34,6 +40,7 @@ async function saveUserData(userId, userData) {
 function Home() {
 
     const [tempos, setTempos] = useState([]);
+    const [playlistImgs, setPlaylistImgs] = useState({});
 
     const navigation = useNavigation();
 
@@ -89,14 +96,51 @@ function Home() {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-            // Todo: Handle how we name these playlists and get those
-            const playlists = response.data.items.slice(0, 3);
-            setTempos(playlists);
-            console.log(playlists)
+            const userId = await AsyncStorage.getItem('userId');
+            const playlists = response.data;
+            try {
+                const docRef = doc(db, 'users', userId);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const firebasePlaylists = docSnap.data().playlists
+                    const matchingPlaylists = playlists.items.filter(item => firebasePlaylists.includes(item.id));
+                    console.log("Matching Playlists:", matchingPlaylists);
+                    setTempos(matchingPlaylists);
+                    console.log(matchingPlaylists)
+
+                    const urls = {}
+                    await Promise.all(matchingPlaylists.map(async (item) => {
+                        const url = await getImageURI(item.id);
+                        urls[item.id] = url;
+                    }));
+                    setPlaylistImgs(urls);
+                } else {
+                    console.log("No such document! Please sign in again")
+                }
+            } catch (e) {
+                console.log(e)
+            }
         } catch (err) {
             console.log(err.message);
         }
     };
+
+    async function getImageURI(id) {
+        const accessToken = await AsyncStorage.getItem("accessToken");
+        try {
+            const response = await axios({
+                method: "GET",
+                url: `https://api.spotify.com/v1/playlists/${id}/images`,
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            console.log('image',  response.data[0].url)
+            return response.data[0].url;
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
 
     useEffect(() => {
         getPlaylist();
@@ -125,9 +169,10 @@ function Home() {
                 renderItem={({ item }) => (
                     <View style={styles.itemContainer}>
                         <View style={[styles.rectangle]}>
+                            <Image source={{ uri: playlistImgs[item.id] }} style={{ width: 50, height: 50 }} />
                             <Text style={[styles.tempoText]}>{item.name}</Text>
                             <Pressable>
-                                <TouchableOpacity style={styles.playButton} onPress={() => navigation.navigate("Songs", {data: item})}>
+                                <TouchableOpacity style={styles.playButton} onPress={() => navigation.navigate("Songs", {data: item, imageUri: playlistImgs[item.id]})}>
                                     <Text style={styles.playButtonText}>Listen</Text>
                                 </TouchableOpacity>
                             </Pressable>
