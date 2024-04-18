@@ -107,7 +107,7 @@ function Preference4() {
                 // Get tempo of selected track
                 let trackId = recommendation.tracks.map((track) => track.id);
                 trackId = trackId[0];
-                const newTempo = await getTrackTempo(trackId, accessToken)
+                let newTempo = await getTrackTempo(trackId, accessToken)
                 if (!newTempo) {
                     newTempo = targetTempo;
                 }
