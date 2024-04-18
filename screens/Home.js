@@ -1,80 +1,80 @@
-import React, { useEffect } from 'react';
-import { View, FlatList, TouchableOpacity, StyleSheet, Text, Pressable } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, FlatList, TouchableOpacity, StyleSheet, Text, Pressable, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
+import axios from 'axios';
+import { firebaseConfig } from './Credentials';
+import { useFocusEffect } from '@react-navigation/native';
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
 
 function Home() {
-
+    
+    const [tempos, setTempos] = useState([]);
+    const [playlistImgs, setPlaylistImgs] = useState({});
+    const [, setUserData] = useState({});
+    
     const navigation = useNavigation();
 
-    const tempos = [
-        { id: '1', name: 'playlist 1' },
-        { id: '2', name: 'playlist 2' },
-        { id: '3', name: 'playlist 3' }
-    ];
+    async function saveUserData(userId, userData) {
+        try {
+            const docRef = doc(db, 'users', userId);
+            const docSnap = await getDoc(docRef, userData);
+            if (docSnap.exists()) {
+                console.log("Document data:", docSnap.data());
+                setUserData(docSnap.data());
+                return;
+            } else {
+                throw new Error("Document does not exist");
+            }
+        } catch (e) {
+            console.log(e);
+        }
+        try {
+            const docRef = doc(db, 'users', userId);
+            await setDoc(docRef, userData);
+            console.log("Successfully set user data in Firestore", userId)
+        } catch (e){
+            console.log(e)
+        }
+    }
 
     const handleLogout = async () => {
-      try {
-        navigation.navigate('Login');
-        await AsyncStorage.removeItem('accessToken');
-        await AsyncStorage.removeItem('refreshToken');
-        await AsyncStorage.removeItem('expirationTime');    
-        console.log('Logout successful');
-      } catch (error) {
-        console.error('Error during logout:', error);
-      }
+        try {
+            navigation.navigate('Login');
+            await AsyncStorage.removeItem('accessToken');
+            await AsyncStorage.removeItem('refreshToken');
+            await AsyncStorage.removeItem('expirationTime');
+            console.log('Logout successful');
+        } catch (error) {
+            console.error('Error during logout:', error);
+        }
     };
-    
-    // const handleCreatePlaylist = async () => {
-    //     try {
-    //         const userId = await AsyncStorage.getItem('userId');
-    //         const accessToken = await AsyncStorage.getItem('accessToken');
-    //         const apiUrl = `https://api.spotify.com/v1/users/${userId}/playlists`;
 
-    //         // Request payload for creating a new playlist
-    //         const playlistData = {
-    //             name: 'New Playlist',
-    //             description: 'New playlist description',
-    //             public: false,
-    //         };
-
-    //         const response = await fetch(apiUrl, {
-    //             method: 'POST',
-    //             headers: {
-    //                 Authorization: `Bearer ${accessToken}`,
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify(playlistData),
-    //         });
-
-    //         if (response.ok) {
-    //             const playlist = await response.json();
-    //             console.log('New playlist created:', playlist);
-    //         } else {
-    //             console.error('Failed to create playlist:', response.statusText);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error creating playlist:', error);
-    //     }
-    // };
-    
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const accessToken = await AsyncStorage.getItem('accessToken');
                 const apiUrl = 'https://api.spotify.com/v1/me';
-                
+
                 const response = await fetch(apiUrl, {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
                 });
-        
+
                 if (response.ok) {
                     const userData = await response.json();
                     console.log('User Data:', userData);
+                    saveUserData(userData.id, userData);
                     await AsyncStorage.setItem('userId', userData.id);
+                    await AsyncStorage.setItem('userData', JSON.stringify(userData));
                 } else {
                     console.error('Failed to fetch user data:', response.statusText);
                 }
@@ -82,13 +82,74 @@ function Home() {
                 console.error('Error fetching user data:', error);
             }
         };
-        fetchData(); 
-    }, []); 
+        fetchData();
+    }, []);
 
+
+    const getPlaylist = async () => {
+        const accessToken = await AsyncStorage.getItem("accessToken");
+        try {
+            const response = await axios({
+                method: "GET",
+                url: `https://api.spotify.com/v1/me/playlists`,
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            const userId = await AsyncStorage.getItem('userId');
+            const playlists = response.data;
+            try {
+                const docRef = doc(db, 'users', userId);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const firebasePlaylists = docSnap.data().playlists
+                    const matchingPlaylists = playlists.items.filter(item => firebasePlaylists.includes(item.id));
+                    setTempos(matchingPlaylists);
+
+                    const urls = {}
+                    await Promise.all(matchingPlaylists.map(async (item) => {
+                        const url = await getImageURI(item.id);
+                        urls[item.id] = url;
+                    }));
+                    setPlaylistImgs(urls);
+                } else {
+                    console.log("No such document! Please sign in again")
+                }
+            } catch (e) {
+                console.log(e)
+            }
+        } catch (err) {
+            console.log(err.message);
+        }
+    };
+
+    async function getImageURI(id) {
+        const accessToken = await AsyncStorage.getItem("accessToken");
+        try {
+            const response = await axios({
+                method: "GET",
+                url: `https://api.spotify.com/v1/playlists/${id}/images`,
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            console.log('image',  response.data[0].url)
+            return response.data[0].url;
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
+
+    useFocusEffect(
+        React.useCallback(() => {
+            getPlaylist();
+            return
+        }, [])
+    );
     return (
         <View style={styles.container}>
             <View style={styles.profileContainer}>
-            {/* GET SPOTIFY PROFILE PIC 
+                {/* GET SPOTIFY PROFILE PIC 
             <Image
                 source={require('./path_to_your_image/profile_pic.png')} 
                 style={styles.profilePic}
@@ -106,20 +167,22 @@ function Home() {
                 data={tempos}
                 showsHorizontalScrollIndicator={false}
                 renderItem={({ item }) => (
-                <View style={styles.itemContainer}>                
-                    <View style={[styles.rectangle]}>
-                        <Text style={[styles.tempoText]}>{item.name}</Text>
-
-                        <TouchableOpacity style={styles.playButton}>
-                                <Text style={styles.playButtonText}>Listen</Text>
-                        </TouchableOpacity>
+                    <View style={styles.itemContainer}>
+                        <View style={[styles.rectangle]}>
+                            <Image source={{ uri: playlistImgs[item.id] }} style={{ width: 50, height: 50 }} />
+                            <Text style={[styles.tempoText]}>{item.name}</Text>
+                            <Pressable>
+                                <TouchableOpacity style={styles.playButton} onPress={() => navigation.navigate("Songs", {data: item, imageUri: playlistImgs[item.id]})}>
+                                    <Text style={styles.playButtonText}>Listen</Text>
+                                </TouchableOpacity>
+                            </Pressable>
+                        </View>
                     </View>
-                </View>
                 )}
                 keyExtractor={(tempo) => tempo.id}
             />
 
-            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference1')}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Preference0')}>
                 <Text style={[styles.buttonText]}>CREATE A TEMPO</Text>
             </TouchableOpacity>
 
@@ -130,28 +193,28 @@ function Home() {
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      alignItems: 'flex-start',
-      justifyContent: 'flex-start',
-      padding: 20,
-      backgroundColor: '#14333F',
+        flex: 1,
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        padding: 20,
+        backgroundColor: '#14333F',
     },
     profileContainer: {
         width: 50,
         height: 50,
-        borderRadius: 50, 
+        borderRadius: 50,
         backgroundColor: "white",
         marginBottom: 70,
     },
     profilePic: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
+        width: 50,
+        height: 50,
+        borderRadius: 25,
     },
     text: {
-        color: 'white', 
-        fontSize: 16, 
-        fontWeight: 'bold', 
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
         marginBottom: 20,
     },
     itemContainer: {
@@ -169,8 +232,8 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     tempoText: {
-        color: 'black', 
-        fontSize: 16, 
+        color: 'black',
+        fontSize: 16,
         padding: 15,
     },
     playButton: {
@@ -185,17 +248,17 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     buttonContainer: {
-      backgroundColor: '#4C7F7E', 
-      width: '100%',
-      paddingVertical: 15,
-      alignItems: 'center',
-      borderRadius: 10,
+        backgroundColor: '#4C7F7E',
+        width: '100%',
+        paddingVertical: 15,
+        alignItems: 'center',
+        borderRadius: 10,
     },
     buttonText: {
-        color: 'white', 
-        fontSize: 16, 
-        fontWeight: 'bold', 
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
-  });
-  
-  export default Home;
+});
+
+export default Home;

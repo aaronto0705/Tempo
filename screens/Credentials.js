@@ -1,6 +1,6 @@
 export const spotifyCredentials = {
-    clientId: 'd6172fc8614948aeacebdcadf338de04',
-    clientSecret: '406c862d289c410691ef7df00acde84b',
+    clientId: '0619c1f2aa5d4d97b2da4d1a2926cf73',
+    clientSecret: 'db6d29a6da284e878236d9c2f5dff05a',
 };
   
 export const scopesArr = [
@@ -19,3 +19,10 @@ export const scopesArr = [
     'user-top-read'
 ];
   
+export const firebaseConfig = {
+    apiKey: "AIzaSyBrW9d8J2cxVJIqx0WYGbV_n3p65G2P0nw",
+    projectId: "tempo-9e317",
+    storageBucket: "tempo-9e317.appspot.com",
+    messagingSenderId: "85989036364",
+    appId: "1:85989036364:ios:345da87677feedd4133fe9"
+}

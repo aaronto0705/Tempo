@@ -5,6 +5,7 @@ import { Entypo, AntDesign } from '@expo/vector-icons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import LoginScreen from './screens/LoginScreen';
+import SongsScreen from './screens/Songs';
 
 
 const Tab = createBottomTabNavigator();
@@ -51,6 +52,7 @@ function Navigation() {
         <NavigationContainer>
             <Stack.Navigator>
                 <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/>
+                <Stack.Screen name="Songs" component={SongsScreen} options={{headerShown: false}}/>
                 <Stack.Screen name="Main" component={BottomTabs} options={{headerShown: false}}/>
             </Stack.Navigator>
         </NavigationContainer>
