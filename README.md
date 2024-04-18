@@ -22,7 +22,7 @@ To run the app locally on your machine, follow these steps:
 
 3. **Create a Spotify Developer Account**
    - Go to the [Spotify Developer Dashboard](https://developer.spotify.com).
-   - Create an account with the following settings:
+   - Create an app with the following settings:
      - Name: Anything
      - Description: Anything
      - Redirect URIs: Use the Expo URI that appears in your console when you run the simulator and append `/--/spotify-auth-callback` to it. For example, if your Expo URI is `exp://172.26.101.3:8081`, your redirect URI will be `exp://172.26.101.3:8081/--/spotify-auth-callback`.
