@@ -82,11 +82,11 @@ function Preference4() {
         }
     };
 
-    const getRecommendations = async (limit, targetTempo, genre, numAdded, mpm, minTempo, maxTempo, pace) => {
+    const getRecommendations = async (limit, targetTempo, genre, numAdded, mpm, minTempo, maxTempo, pace, callLimit) => {
         try {
             const apiUrl = `https://api.spotify.com/v1/recommendations?` +
                 `seed_genres=${encodeURIComponent(genre)}` +
-                `&limit=1` +  // Always request one song per API call
+                `&limit=${callLimit}` +  // Always request one song per API call
                 `&market=US` +
                 `&min_tempo=${minTempo}` +
                 `&max_tempo=${maxTempo}` + 
@@ -113,7 +113,7 @@ function Preference4() {
                 }
 
                 await addSongs(recommendation);
-                numAdded++;
+                numAdded += callLimit;
     
                 // Determine next targetTempo based on pace
                 let nextTargetTempo = targetTempo;
@@ -135,7 +135,7 @@ function Preference4() {
                 }
     
                 if (numAdded < limit) {
-                    await getRecommendations(limit, nextTargetTempo, genre, numAdded, mpm, minTempo, maxTempo, pace);
+                    await getRecommendations(limit, nextTargetTempo, genre, numAdded, mpm, minTempo, maxTempo, pace, callLimit);
                 }
             } else {
                 console.error('Failed to fetch recommendations:', response.statusText);
@@ -217,11 +217,16 @@ function Preference4() {
 
             // 3.5 min is a reasonable avg song length, change if needed
             const limit = Math.ceil(totalMinutes / 3.5); 
-
-            // change this with new algorithm
-            const targetTempo = 150; 
+            let callLimit = -1;
+            if (pace === 'constant') { 
+                callLimit = limit;
+            } else {
+                callLimit = 1;
+            }
+            // Change this with a new algorithm to determine initial tempo
+            const initialTempo = 150; 
             // Change the +- 100 after algorithm is implemented
-            await getRecommendations(limit, targetTempo, genre, 0, minutePerMile, targetTempo - 100, targetTempo + 100, pace);
+            await getRecommendations(limit, initialTempo, genre, 0, minutePerMile, initialTempo - 100, initialTempo + 100, pace, callLimit);
     
             await insertDB();
             navigation.navigate('Home');
