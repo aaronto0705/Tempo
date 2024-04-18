@@ -56,34 +56,42 @@ function Preference4() {
         }
     };
 
-    const getRecommendations = async () => {
+    const getTrackTempo = async (trackId, accessToken) => {
         try {
-            const hours = parseInt(await AsyncStorage.getItem('Preference1h')) || 0;
-            const minutes = parseInt(await AsyncStorage.getItem('Preference1m')) || 0;
-            // const minutePerMile = parseFloat(await AsyncStorage.getItem('Preference2')) || 0;
-            const genre = await AsyncStorage.getItem('Preference4');
-        
-            // Calculate total duration in minutes
-            const totalMinutes = hours * 60 + minutes;
-        
-            // Calculate number of songs (limit)
-            const limit = Math.ceil(totalMinutes / 3);
-        
-            // Calculate target BPM for target_tempo (hardcoded, don't know what algorithm to use)
-            // Should be using minutePerMile here but idk what the calculation should be
-            const targetBPM = 150
-            const minTempo = targetBPM - 100;
-            const maxTempo = targetBPM + 100;
-        
+            const apiUrl = `https://api.spotify.com/v1/audio-features/${trackId}`;
+    
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+    
+            if (response.ok) {
+                const trackFeatures = await response.json();
+                const tempo = trackFeatures.tempo; // Extract the tempo (BPM) from track features
+                console.log(`Tempo (BPM) of track ${trackId}: ${tempo}`);
+                return tempo; // Return tempo value
+            } else {
+                console.error('Failed to fetch track features:', response.statusText);
+                return null; // Return null if request fails
+            }
+        } catch (error) {
+            console.error('Error fetching track features:', error);
+            return null; // Return null in case of an error
+        }
+    };
+
+    const getRecommendations = async (limit, targetTempo, genre, numAdded, mpm, minTempo, maxTempo, pace) => {
+        try {
             const apiUrl = `https://api.spotify.com/v1/recommendations?` +
-            `seed_genres=${encodeURIComponent(genre)}` +
-            `&limit=${limit}` +
-            `&market=US` +
-            `&min_tempo=${minTempo}` +
-            `&max_tempo=${maxTempo}` +
-            `&target_tempo=${targetBPM}`;
-        
-            // Fetch recommendations from Spotify API
+                `seed_genres=${encodeURIComponent(genre)}` +
+                `&limit=1` +  // Always request one song per API call
+                `&market=US` +
+                `&min_tempo=${minTempo}` +
+                `&max_tempo=${maxTempo}` + 
+                `&target_tempo=${targetTempo}`;
+    
             const accessToken = await AsyncStorage.getItem('accessToken');
             const response = await fetch(apiUrl, {
                 method: 'GET',
@@ -91,21 +99,53 @@ function Preference4() {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-        
+    
             if (response.ok) {
-                const recommendations = await response.json();
-                console.log('Recommendations:', recommendations);
-                await addSongs(recommendations);
+                const recommendation = await response.json();
+                console.log('Recommendation:', recommendation);
+
+                // Get tempo of selected track
+                const trackId = recommendations.tracks.map((track) => track.id);
+                trackId = trackId[0];
+                const newTempo = await getTrackTempo(trackId, accessToken)
+                if (!newTempo) {
+                    newTempo = targetTempo;
+                }
+                
+                await addSongs(recommendation);
+                numAdded++;
+    
+                // Determine next targetTempo based on pace
+                let nextTargetTempo = targetTempo;
+    
+                // The way I've implemented this, I think we say on preference screen 3 that slowDown/speedUp will change the pace after each song and that by the end of the playlist the pace will have changed by 25%
+                const factor = Math.floor(mpm * 0.25 / limit)
+                if (pace === 'slowDown') { 
+                    nextTargetTempo -= factor; 
+                    maxTempo = newTempo;
+                    minTempo = newTempo - 100; // change 100 after algorithm is implemented
+                } else if (pace === 'speedUp') {
+                    nextTargetTempo += factor; 
+                    minTempo = newTempo;
+                    maxTempo = newTempo + 100; // change 100 after algorithm is implemented
+                }
+                else {
+                    minTempo = targetTempo - 100; // change 100 after algorithm is implemented
+                    maxTempo = targetTempo + 100; // change 100 after algorithm is implemented
+                }
+    
+                if (numAdded < limit) {
+                    await getRecommendations(limit, nextTargetTempo, genre, numAdded, mpm, minTempo, maxTempo, pace);
+                }
             } else {
                 console.error('Failed to fetch recommendations:', response.statusText);
             }
         } catch (error) {
             console.error('Error creating recommendations:', error);
         }
-      };
-      
-
-      const addSongs = async (recommendations) => {
+    };
+    
+    const addSongs = async (recommendations) => {
         try {
             const playlistId = await AsyncStorage.getItem('PlaylistId');
             if (!playlistId) {
@@ -163,19 +203,32 @@ function Preference4() {
         }
     }
     
-
     const handleNextPress = async () => {
         try {
             await AsyncStorage.setItem('Preference4', selectedGenre);
+            const genre = selectedGenre
+            const pace = await AsyncStorage.getItem('Preference3');
+
             await handleCreatePlaylist();
-            await getRecommendations();
+
+            const minutePerMile = parseFloat(await AsyncStorage.getItem('Preference2')) || 0;
+            const totalMinutes = parseInt(await AsyncStorage.getItem('Preference1h')) * 60 +
+                                 parseInt(await AsyncStorage.getItem('Preference1m')) || 0;
+
+            // 3 min is a reasonable avg song length, change if needed
+            const limit = Math.ceil(totalMinutes / 3); 
+
+            // change this with new algorithm
+            const targetTempo = 150; 
+            // Change the +- 100 after algorithm is implemented
+            await getRecommendations(limit, targetTempo, genre, 0, minutePerMile, targetTempo - 100, targetTempo + 100, pace);
+    
             await insertDB();
             navigation.navigate('Home');
-        } 
-        catch (error) {
+        } catch (error) {
             console.error('Error storing playlist name:', error);
         }
-    }
+    };
 
     return (
         <View>
