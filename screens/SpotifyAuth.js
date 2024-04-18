@@ -72,7 +72,9 @@ export const refreshTokens = async () => {
       const { access_token, refresh_token, expires_in } = responseJson;
       const expirationTime = new Date().getTime() + expires_in * 1000;
       await setUserData('accessToken', access_token);
-      await setUserData('refreshToken', refresh_token);
+      if (refresh_token) {
+        await AsyncStorage.setItem('refreshToken', refresh_token);
+      }
       await setUserData('expirationTime', expirationTime);
     }
   } catch (error) {
