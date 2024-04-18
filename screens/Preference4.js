@@ -72,8 +72,8 @@ function Preference4() {
             // Calculate target BPM for target_tempo (hardcoded, don't know what algorithm to use)
             // Should be using minutePerMile here but idk what the calculation should be
             const targetBPM = 150
-            const minTempo = targetBPM - 5;
-            const maxTempo = targetBPM + 5;
+            const minTempo = targetBPM - 100;
+            const maxTempo = targetBPM + 100;
         
             const apiUrl = `https://api.spotify.com/v1/recommendations?` +
             `seed_genres=${encodeURIComponent(genre)}` +
