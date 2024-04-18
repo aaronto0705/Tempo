@@ -215,8 +215,8 @@ function Preference4() {
             const totalMinutes = parseInt(await AsyncStorage.getItem('Preference1h')) * 60 +
                                  parseInt(await AsyncStorage.getItem('Preference1m')) || 0;
 
-            // 3 min is a reasonable avg song length, change if needed
-            const limit = Math.ceil(totalMinutes / 3); 
+            // 3.5 min is a reasonable avg song length, change if needed
+            const limit = Math.ceil(totalMinutes / 3.5); 
 
             // change this with new algorithm
             const targetTempo = 150; 
