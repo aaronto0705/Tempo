@@ -150,33 +150,35 @@ function Home() {
     );
     return (
         <View style={styles.container}>
-            <View style={styles.profileContainer}>
-                <Image
-                    source={{uri: profilePic}} 
-                    style={styles.profilePic}
-                    resizeMode="cover"
-                /> 
+            <View style={styles.header}>
+                <View style={styles.profileContainer}>
+                    <Image
+                        source={{uri: profilePic}} 
+                        style={styles.profilePic}
+                        resizeMode="cover"
+                    /> 
+                </View>
+
+                <Pressable onPress={handleLogout}>
+                    <Text style={styles.logoutButton}>Logout</Text>
+                </Pressable>
             </View>
-
-            <Pressable onPress={handleLogout}>
-                <Text style={styles.logoutButton}>Logout</Text>
-            </Pressable>
-
             <Text style={styles.text}>Your Tempos</Text>
 
             <FlatList
                 data={tempos}
                 showsHorizontalScrollIndicator={false}
+                numColumns={2}
+                contentContainerStyle={styles.flatListContainer}
                 renderItem={({ item }) => (
                     <View style={styles.itemContainer}>
                         <View style={[styles.rectangle]}>
-                            <Image source={{ uri: playlistImgs[item.id] }} style={{ width: 50, height: 50 }} />
-                            <Text style={[styles.tempoText]}>{item.name}</Text>
                             <Pressable>
-                                <TouchableOpacity style={styles.playButton} onPress={() => navigation.navigate("Songs", {data: item, imageUri: playlistImgs[item.id]})}>
-                                    <Text style={styles.playButtonText}>Listen</Text>
+                                <TouchableOpacity onPress={() => navigation.navigate("Songs", {data: item, imageUri: playlistImgs[item.id]})}>
+                                    <Image source={{ uri: playlistImgs[item.id] }} style={{ width: 150, height: 150 }} />
                                 </TouchableOpacity>
-                            </Pressable>
+                                <Text style={[styles.tempoText]}>{item.name}</Text>
+                            </Pressable> 
                         </View>
                     </View>
                 )}
@@ -200,12 +202,17 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#14333F',
     },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        marginBottom: 50,
+        marginTop: 40,
+    },
     profileContainer: {
-        width: 60,
-        height: 60,
-        borderRadius: 50,
-        backgroundColor: "white",
-        marginBottom: 70,
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     profilePic: {
         width: 60,
@@ -214,31 +221,34 @@ const styles = StyleSheet.create({
     },
     logoutButton: {
         color: 'white',
+        fontSize: 20,
     },
     text: {
         color: 'white',
         fontSize: 25,
         fontWeight: 'bold',
-        marginBottom: 20,
+        marginBottom: 60,
+    },
+    flatListContainer: {
+        flexGrow: 1,
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        marginBottom: 100,
     },
     itemContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
+        width:'48%',
     },
     rectangle: {
-        backgroundColor: 'white',
-        width: 300,
-        borderRadius: 10,
+        aspectRatio: 1, 
         justifyContent: 'space-between',
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 15,
-        marginBottom: 10,
+        paddingHorizontal: 10,
     },
     tempoText: {
-        color: 'black',
+        color: 'white',
         fontSize: 16,
-        padding: 15,
+        paddingTop: 10,
     },
     playButton: {
         backgroundColor: 'green',

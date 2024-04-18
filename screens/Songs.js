@@ -1,14 +1,17 @@
-import { StyleSheet, Text, View, Pressable, Image, FlatList } from 'react-native'
+import { StyleSheet, Text, View, Pressable, Image, FlatList, TouchableOpacity } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react'
 import { useRoute } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Entypo } from "@expo/vector-icons";
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
 const Songs = () => {
 
     const [songs, setSongs] = useState([]);
+
+    const navigation = useNavigation();
 
     const route = useRoute();
     const imageUri = route.params.imageUri;
@@ -70,6 +73,9 @@ const Songs = () => {
 
     return (
         <LinearGradient colors={['#000000', '#000000']} style={{ flex: 1 }}>
+            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                <Text style={{ color: 'white', padding: 50}}>Back</Text>
+            </TouchableOpacity>
             <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
                 <Image source={{ uri: imageUri }} style={{ width: 200, height: 200, borderRadius: 10, margin: 20 }} />
             </View>
@@ -106,6 +112,8 @@ const Songs = () => {
                 />
             </View>
         </LinearGradient>
+
+
     )
 }
 
