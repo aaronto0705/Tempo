@@ -40,12 +40,12 @@ function Preference1() {
                 <Text>Hours:</Text>
                 <TextInput
                 style={styles.input}
-                /*save value*/ 
                 value={hours.toString()}
                 onChangeText={changeHours}
                 keyboardType="numeric"
                 />
             </View>
+
             <View style={styles.inputContainer}>
                 <Text>Minutes:</Text>
                 <TextInput
