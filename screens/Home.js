@@ -231,12 +231,14 @@ const styles = StyleSheet.create({
     },
     flatListContainer: {
         flexGrow: 1,
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: 100,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        marginBottom: 20,
+        width: '100%',
     },
     itemContainer: {
-        width:'48%',
+        width:'50%',
+        marginVertical: 10,
     },
     rectangle: {
         aspectRatio: 1, 
@@ -244,11 +246,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 10,
+        padding: 10,
     },
     tempoText: {
         color: 'white',
         fontSize: 16,
-        paddingTop: 10,
+        paddingTop: 4,
     },
     playButton: {
         backgroundColor: 'green',

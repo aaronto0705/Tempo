@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NumericInput from 'react-native-numeric-input';
+
 
 function Preference1() {
 
@@ -36,25 +38,28 @@ function Preference1() {
     return (
         <View style={styles.container}>
             <Text style={styles.questionText}>How long do you want to run?</Text>
-            <View style={styles.inputContainer}>
-                <Text>Hours:</Text>
-                <TextInput
-                style={styles.input}
-                value={hours.toString()}
-                onChangeText={changeHours}
-                keyboardType="numeric"
-                />
-            </View>
 
             <View style={styles.inputContainer}>
-                <Text>Minutes:</Text>
-                <TextInput
-                style={styles.input}
-                /*save value*/ 
-                value={minutes.toString()}
-                onChangeText={changeMinutes}
-                keyboardType="numeric"
-                />
+                <Text style={styles.label}>Hours</Text>
+                <NumericInput 
+                    onChange={value => changeHours(value)} 
+                    textColor='white'
+                    rounded
+                    minValue={0}
+                    maxValue={24}
+                    containerStyle={styles.numericInputContainer}
+                    />
+            </View>
+            <View style={styles.inputContainer}>
+                <Text style={styles.label}>Minutes</Text>
+                <NumericInput 
+                    onChange={value => changeMinutes(value)} 
+                    textColor='white'
+                    rounded
+                    minValue={0}
+                    maxValue={59}
+                    containerStyle={styles.numericInputContainer}
+                    />
             </View>
             <TouchableOpacity style={styles.buttonContainer} onPress={handleNextPress}>
                 <Text style={[styles.buttonText]}>Next</Text>
@@ -66,39 +71,45 @@ function Preference1() {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      alignItems: 'flex-start',
-      justifyContent: 'flex-start',
-      padding: 20,
-      backgroundColor: 'white',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 20,
+      backgroundColor: '#4C7F7E',
     },
     questionText: {
-        fontSize: 16, 
+        fontSize: 24, 
         fontWeight: 'bold', 
         marginBottom: 20,
+        color: 'white'
     },
-    inputContainer: {
-        flexDirection: 'row',
+    numericInputContainer: {
         alignItems: 'center',
+        justifyContent: 'center',
         marginBottom: 10,
     },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-        padding: 8,
-        marginHorizontal: 5,
+    label: {
+        color: 'white',
+        fontSize: 20,
+        marginBottom: 10,
+        fontWeight: 'medium',
+    },
+    inputContainer: {
+        alignItems: 'center',
+        marginBottom: 30,
     },
     buttonContainer: {
-        backgroundColor: '#4C7F7E', 
-        width: '100%',
-        paddingVertical: 15,
+        backgroundColor: '#14333F',
+        width: '50%',
+        paddingVertical: 8,
         alignItems: 'center',
-        borderRadius: 10,
+        borderRadius: 15,
+        marginBottom: 30,
       },
     buttonText: {
-        color: 'white', 
-        fontSize: 16, 
-        fontWeight: 'bold', 
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 'bold',
+        margin: 10,
     },
 })
 

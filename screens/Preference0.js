@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
       marginBottom: 50,
       backgroundColor: 'white',
       borderRadius: 15,
-      fontsize: 16,
+      fontSize: 16,
     },
     text: {
       fontSize: 20,
