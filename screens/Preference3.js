@@ -56,46 +56,52 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    paddingHorizontal: 20,
     alignItems: 'center',
+    backgroundColor: '#4C7F7E',
   },
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
+    marginBottom: 30,
   },
   questionText: {
-    fontSize: 16, 
+    color: 'white',
+    fontSize: 24, 
     fontWeight: 'bold', 
     marginBottom: 20,
     },
   button: {
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: '#eee',
+    backgroundColor: '#4C7F7E',
     borderRadius: 20,
   },
   selectedButton: {
-    backgroundColor: '#4C7F7E',
+    backgroundColor: '#14333F',
   },
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+    color: 'white',
   },
   selectedButtonText: {
     color: '#fff',
   },
   buttonContainer: {
-    backgroundColor: '#4C7F7E', 
-    width: '100%',
-    paddingVertical: 15,
+    backgroundColor: '#14333F',
+    width: '50%',
+    paddingVertical: 8,
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: 15,
+    marginBottom: 30,
   },
   nextButtonText: {
       color: 'white', 
-      fontSize: 16, 
+      fontSize: 20, 
       fontWeight: 'bold', 
+      margin: 10,
   },
 });
 

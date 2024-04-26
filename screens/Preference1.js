@@ -37,7 +37,7 @@ function Preference1() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.questionText}>How long do you want to run?</Text>
+            <Text style={styles.questionText}>How long do you want to run for?</Text>
 
             <View style={styles.inputContainer}>
                 <Text style={styles.label}>Hours</Text>
