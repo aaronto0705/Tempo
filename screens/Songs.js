@@ -107,9 +107,9 @@ const Songs = () => {
                     <Entypo name="controller-play" size={24} color="white" />
                 </Pressable>
             </View>
-            <View > 
-                <Text style={styles.playlistName}>{playlistName}</Text>
+            <Text style={styles.playlistName}>{playlistName}</Text>
                 <Text style={styles.playlistDescription}>{playlistDescription}</Text>
+            <View > 
                 <FlatList
                     data={songs}
                     showsHorizontalScrollIndicator={false}
