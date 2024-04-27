@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 function Preference0() {
 
     const navigation = useNavigation();
@@ -24,7 +25,7 @@ function Preference0() {
 
     return (
       <View style={styles.container}>
-        <Text style={styles.text}>Playlist Name: </Text>
+        <Text style={styles.text}>Tempo Name: </Text>
         <TextInput
         style={styles.input}
         value={playlistName} 
@@ -44,18 +45,39 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       paddingHorizontal: 20,
+      backgroundColor: '#4C7F7E',
     },
     input: {
-      height: 40,
+      height: 50,
       width: '100%',
       borderColor: 'gray',
       borderWidth: 1,
-      paddingHorizontal: 10,
-      marginBottom: 20,
-    },
-    text: {
+      paddingHorizontal: 15,
+      marginBottom: 50,
+      backgroundColor: 'white',
+      borderRadius: 15,
       fontSize: 16,
     },
+    text: {
+      fontSize: 20,
+      paddingBottom: 20,
+      fontWeight: 'bold',
+      color: 'white',
+    },
+  buttonContainer: {
+      backgroundColor: '#14333F',
+      width: '50%',
+      paddingVertical: 8,
+      alignItems: 'center',
+      borderRadius: 15,
+      marginBottom: 30,
+  },
+  buttonText: {
+      color: 'white',
+      fontSize: 20,
+      fontWeight: 'bold',
+      margin: 10,
+  },
   });
   
   export default Preference0;

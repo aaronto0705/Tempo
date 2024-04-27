@@ -236,22 +236,24 @@ function Preference4() {
     };
 
     return (
-        <View>
+        <View style={styles.container}>
+            <Text style={styles.questionText}>Genre of music:</Text>
+
             <Picker
                 selectedValue={selectedGenre}
-                onValueChange={(itemValue) =>
-                setSelectedGenre(itemValue)
+                style={styles.picker}
+                onValueChange={(itemValue) => setSelectedGenre(itemValue)
             }>
-                <Picker.Item label="Ambient" value="ambient"/>
-                <Picker.Item label="Chill" value="chill"/>
-                <Picker.Item label="Country" value="country"/>
-                <Picker.Item label="Dance" value="dance"/>
-                <Picker.Item label="Electronic" value="electronic"/>
-                <Picker.Item label="Groove" value="groove"/>
-                <Picker.Item label="House" value="house"/>
-                <Picker.Item label="Indie" value="indie"/>
-                <Picker.Item label="Metal" value="metal"/>
-                <Picker.Item label="Pop" value="ambient"/>
+                <Picker.Item label="Ambient" value="ambient" color="white"/>
+                <Picker.Item label="Chill" value="chill" color="white"/>
+                <Picker.Item label="Country" value="country" color="white"/>
+                <Picker.Item label="Dance" value="dance" color="white"/>
+                <Picker.Item label="Electronic" value="electronic" color="white"/>
+                <Picker.Item label="Groove" value="groove" color="white"/>
+                <Picker.Item label="House" value="house" color="white"/>
+                <Picker.Item label="Indie" value="indie" color="white"/>
+                <Picker.Item label="Metal" value="metal" color="white"/>
+                <Picker.Item label="Pop" value="ambient" color="white"/>
             </Picker>
 
 
@@ -263,17 +265,38 @@ function Preference4() {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        paddingHorizontal: 20,
+        alignItems: 'center',
+        backgroundColor: '#4C7F7E',
+    },
+    questionText: {
+        color: 'white',
+        fontSize: 24, 
+        fontWeight: 'bold', 
+        marginBottom: 20,
+        },
+    picker: {
+        width: '100%', 
+        backgroundColor: '#4C7F7E', 
+        borderRadius: 10, 
+        marginBottom: 20, 
+    },
     buttonContainer: {
-      backgroundColor: '#4C7F7E', 
-      width: '100%',
-      paddingVertical: 15,
-      alignItems: 'center',
-      borderRadius: 10,
+        backgroundColor: '#14333F',
+        width: '50%',
+        paddingVertical: 8,
+        alignItems: 'center',
+        borderRadius: 15,
+        marginBottom: 30,
     },
     nextButtonText: {
         color: 'white', 
-        fontSize: 16, 
+        fontSize: 20, 
         fontWeight: 'bold', 
+        margin: 10,
     },
   });
 

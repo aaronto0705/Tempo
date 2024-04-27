@@ -1,14 +1,18 @@
-import { StyleSheet, Text, View, Pressable, Image, FlatList } from 'react-native'
-import { LinearGradient } from 'expo-linear-gradient';
+import { StyleSheet, Text, View, Pressable, Image, FlatList, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useRoute } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Entypo } from "@expo/vector-icons";
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
 const Songs = () => {
 
     const [songs, setSongs] = useState([]);
+    const [playlistName, setPlaylistName] = useState("");
+    const [playlistDescription, setPlaylistDescription] = useState("");
+
+    const navigation = useNavigation();
 
     const route = useRoute();
     const imageUri = route.params.imageUri;
@@ -55,10 +59,22 @@ const Songs = () => {
             for (let i = 0; i < cursongs.length; i++) {
                 let song = cursongs[i].track
                 const artists = song.artists || [{'name': 'Unknown'}];
-                newSongs.push({ 'artist': artists, 'name': song.name })
+                const image = song.album.images.length > 0 ? song.album.images[0].url : null;
+                newSongs.push({ 'artist': artists, 'name': song.name, 'image': image })
                 setSongs(songs => [...songs, { 'artist': artists, 'name': song.name }]);
             }
             console.log('new songs', newSongs)
+
+            const playlistDetailsResponse = await axios({
+                method: "GET",
+                url: `https://api.spotify.com/v1/playlists/${playlistId}`,
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            setPlaylistName(playlistDetailsResponse.data.name);
+            setPlaylistDescription(playlistDetailsResponse.data.description);
+
         } catch (e) { 
             console.log(e)
         }
@@ -69,9 +85,12 @@ const Songs = () => {
     }, [])
 
     return (
-        <LinearGradient colors={['#000000', '#000000']} style={{ flex: 1 }}>
+        <View style={styles.container}>
+            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                <Text style={{ color: 'white', padding: 20, fontSize: 20, paddingTop:40}}>Back</Text>
+            </TouchableOpacity>
             <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
-                <Image source={{ uri: imageUri }} style={{ width: 200, height: 200, borderRadius: 10, margin: 20 }} />
+                <Image source={{ uri: imageUri }} style={{ width: 200, height: 200, margin: 20 }} />
             </View>
             <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 30 }}>
                 <Pressable
@@ -88,95 +107,81 @@ const Songs = () => {
                     <Entypo name="controller-play" size={24} color="white" />
                 </Pressable>
             </View>
-            <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginTop: 80 }}>Songs</Text>
-            <View>
+            <Text style={styles.playlistName}>{playlistName}</Text>
+            <Text style={styles.playlistDescription}>{playlistDescription}</Text>
+            <View > 
                 <FlatList
                     data={songs}
                     showsHorizontalScrollIndicator={false}
+                    style={styles.flatListContainer}
                     renderItem={({ item }) => (
                         <View style={styles.itemContainer}>
                             <View style={[styles.rectangle]}>
-                                <Text style={[styles.tempoText]}>{item.name}</Text>
-                                <Pressable>
-                                </Pressable>
+                            {item.image ? (
+                                <Image source={{ uri: item.image }} style={{ height: 45, width: 45 }} />
+                            ) : (
+                                <View style={{ height: 45, width: 45, backgroundColor: 'gray' }} />
+                            )}                                
+                            <Text style={[styles.tempoText]}>{item.name}</Text>
                             </View>
                         </View>
                     )}
                     keyExtractor={(tempo) => tempo.id}
                 />
             </View>
-        </LinearGradient>
+        </View>
+
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'flex-start',
-        justifyContent: 'flex-start',
-        padding: 20,
         backgroundColor: '#14333F',
     },
-    profileContainer: {
-        width: 50,
-        height: 50,
-        borderRadius: 50,
-        backgroundColor: "white",
-        marginBottom: 70,
+    flatListContainer: {
+        marginBottom: 20,
+        paddingLeft: 20,
     },
-    profilePic: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+    playlistName: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 26,
+        paddingLeft: 20,
+        paddingBottom: 10,
     },
-    text: {
+    playlistDescription: {
         color: 'white',
         fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    itemContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
+        paddingLeft: 20,
+        paddingBottom: 40,
+        width: '60%',
     },
     rectangle: {
-        backgroundColor: 'white',
-        width: 300,
-        borderRadius: 10,
-        justifyContent: 'space-between',
+        width: '100%', 
+        paddingLeft: 10,
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 15,
         marginBottom: 10,
     },
     tempoText: {
-        color: 'black',
+        color: 'white',
+        paddingLeft: 20,
         fontSize: 16,
-        padding: 15,
     },
     playButton: {
         backgroundColor: 'green',
         paddingHorizontal: 15,
         paddingVertical: 5,
         borderRadius: 10,
+        marginBottom: 20,
     },
     playButtonText: {
         color: 'white',
         fontSize: 16,
         fontWeight: 'bold',
     },
-    buttonContainer: {
-        backgroundColor: '#4C7F7E',
-        width: '100%',
-        paddingVertical: 15,
-        alignItems: 'center',
-        borderRadius: 10,
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
+
 });
 
 export default Songs

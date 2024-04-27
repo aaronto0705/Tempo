@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NumericInput from 'react-native-numeric-input';
+
 
 function Preference2() {
 
@@ -28,13 +30,15 @@ function Preference2() {
         <View style={styles.container}>
             <Text style={styles.questionText}>Average Minutes per Mile?</Text>
             <View style={styles.inputContainer}>
-                <Text>Minutes:</Text>
-                <TextInput
-                style={styles.input}
-                value={minutes.toString()}
-                onChangeText={changeMinutes}
-                keyboardType="numeric"
-                />
+                <Text style={styles.label}>Minutes</Text>
+                <NumericInput 
+                    onChange={value => changeMinutes(value)} 
+                    textColor='white'
+                    rounded
+                    minValue={0}
+                    maxValue={60}
+                    containerStyle={styles.numericInputContainer}
+                    />
             </View>
             <TouchableOpacity style={styles.buttonContainer} onPress={handleNextPress}>
                 <Text style={[styles.buttonText]}>Next</Text>
@@ -45,40 +49,41 @@ function Preference2() {
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      alignItems: 'flex-start',
-      justifyContent: 'flex-start',
-      padding: 20,
-      backgroundColor: 'white',
-    },
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 20,
+        backgroundColor: '#4C7F7E',
+      },
     questionText: {
-        fontSize: 16, 
+        fontSize: 24, 
         fontWeight: 'bold', 
         marginBottom: 20,
+        color: 'white'
+    },
+    label: {
+        color: 'white',
+        fontSize: 20,
+        marginBottom: 10,
+        fontWeight: 'medium',
     },
     inputContainer: {
-        flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-        padding: 8,
-        marginHorizontal: 5,
+        marginBottom: 30,
     },
     buttonContainer: {
-        backgroundColor: '#4C7F7E', 
-        width: '100%',
-        paddingVertical: 15,
+        backgroundColor: '#14333F',
+        width: '50%',
+        paddingVertical: 8,
         alignItems: 'center',
-        borderRadius: 10,
+        borderRadius: 15,
+        marginBottom: 30,
       },
     buttonText: {
-        color: 'white', 
-        fontSize: 16, 
-        fontWeight: 'bold', 
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 'bold',
+        margin: 10,
     },
 })
 
