@@ -25,13 +25,18 @@ function Preference3() {
   return (
     <View style={styles.container}>
         <Text style={styles.questionText}>Pace during the run:</Text>
+        <Text></Text>
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
           style={[styles.button, selectedOption === 'slowDown' && styles.selectedButton]}
           onPress={() => handleOptionPress('slowDown')}
         >
           <Text style={[styles.buttonText, selectedOption === 'slowDown' && styles.selectedButtonText]}>Slow down</Text>
+
         </TouchableOpacity>
+        {selectedOption === 'slowDown' && (
+        <Text style={styles.description1}>Decrease pace by 25%</Text>
+        )}
         <TouchableOpacity
           style={[styles.button, selectedOption === 'constant' && styles.selectedButton]}
           onPress={() => handleOptionPress('constant')}
@@ -44,6 +49,9 @@ function Preference3() {
         >
           <Text style={[styles.buttonText, selectedOption === 'speedUp' && styles.selectedButtonText]}>Speed up</Text>
         </TouchableOpacity>
+        {selectedOption === 'speedUp' && (
+        <Text style={styles.description2}>Increase pace by 25%</Text>
+        )}
       </View>
       <TouchableOpacity style={styles.buttonContainer} onPress={handleNextPress}>
                 <Text style={[styles.nextButtonText]}>Next</Text>
@@ -81,6 +89,21 @@ const styles = StyleSheet.create({
   selectedButton: {
     backgroundColor: '#14333F',
   },
+  description1: {
+    paddingTop: 20,
+    width: '50%',
+    position: 'absolute',
+    paddingBottom: 100,
+    top: '70%',
+    color: 'white',
+  },
+  description2: {
+    paddingTop: 20,
+    position: 'absolute',
+    top: '70%', 
+    right: 0, 
+    color: 'white',
+  },
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -96,6 +119,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 15,
     marginBottom: 30,
+    marginTop: 20,
   },
   nextButtonText: {
       color: 'white', 

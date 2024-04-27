@@ -108,7 +108,7 @@ const Songs = () => {
                 </Pressable>
             </View>
             <Text style={styles.playlistName}>{playlistName}</Text>
-                <Text style={styles.playlistDescription}>{playlistDescription}</Text>
+            <Text style={styles.playlistDescription}>{playlistDescription}</Text>
             <View > 
                 <FlatList
                     data={songs}
