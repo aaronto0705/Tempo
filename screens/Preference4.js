@@ -51,11 +51,12 @@ function Preference4() {
             const paceMinutes = await AsyncStorage.getItem('Preference2m');
             const paceSeconds = await AsyncStorage.getItem('Preference2s');
             const genre = await AsyncStorage.getItem('Preference4');
+            const initialTempo = await AsyncStorage.getItem('initialTempo');
 
             // Request payload for creating a new playlist
             const playlistData = {
                 name: name,
-                description: `Playlist with pace of ${paceMinutes}:${paceSeconds} and genre of ${genre}`,
+                description: `Playlist with pace of ${paceMinutes}:${paceSeconds}minutes per mile, initial tempo of ${initialTempo}bpm, and genre of ${genre}`,
                 public: false,
             };
 
@@ -236,8 +237,8 @@ function Preference4() {
 
             await handleCreatePlaylist();
 
-            const paceMinutes = parseFloat(await AsyncStorage.getItem('Preference2m')) || 0;
-            const paceSeconds = parseFloat(await AsyncStorage.getItem('Preference2s')) || 0;
+            const paceMinutes = parseInt(await AsyncStorage.getItem('Preference2m')) || 0;
+            const paceSeconds = parseInt(await AsyncStorage.getItem('Preference2s')) || 0;
             const minutePerMile = paceMinutes + (paceSeconds / 60);
             const totalMinutes = parseInt(await AsyncStorage.getItem('Preference1h')) * 60 +
                                  parseInt(await AsyncStorage.getItem('Preference1m')) || 0;
@@ -251,7 +252,8 @@ function Preference4() {
                 callLimit = 1;
             }
             const milesPerHour = minutesPerMileToMilesPerHour(paceMinutes, paceSeconds);
-            const initialTempo = getTempoFromMPH(milesPerHour); 
+            const initialTempo = Math.round(getTempoFromMPH(milesPerHour)); 
+            await AsyncStorage.setItem('initialTempo', initialTempo.toString());
             await getRecommendations(limit, initialTempo, genre, 0, minutePerMile, initialTempo - 15, initialTempo + 15, pace, callLimit);
     
             await insertDB();
