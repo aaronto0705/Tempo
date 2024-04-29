@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import { firebaseConfig } from './Credentials';
-import ReactLoading from "react-loading";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const app = initializeApp(firebaseConfig);
 
@@ -61,14 +61,14 @@ function Preference4() {
     const getTrackTempo = async (trackId, accessToken) => {
         try {
             const apiUrl = `https://api.spotify.com/v1/audio-features/${trackId}`;
-    
+
             const response = await fetch(apiUrl, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-    
+
             if (response.ok) {
                 const trackFeatures = await response.json();
                 const tempo = trackFeatures.tempo; // Extract the tempo (BPM) from track features
@@ -119,7 +119,7 @@ function Preference4() {
     //         const responses = await Promise.all(recUrl.map(url => fetch(url, {
     //             method: 'GET',
     //             headers: {
-    //                 Authorization: `Bearer BQBElRgMMM4v-lJX_sf6JraYsi6fQGAe75u6Vv6GEC336P-k8MYTHxsnvOkJJ2w7TP61NgsChJHZZX_-QBmHtMX81szoWHHbjcHQEBgEWhsJvrHccFFEsd-XeuXCK3IWeGWI8a1H2NRWzzDj1-dt6i8UDnlBDCUkSbNSvvsyBu_pq5B0de_COhvfP51qk_5oVMGZ6cXSHuUtgAS0rbwT8zRWrx8aiAXZV0FO63eN3PjNka1tDFEi2UAP641THvKyRwoupOMX13hh1AMLvoYznuHO4PckzJ_SXLiLyBNPz1nR4CPkmA`,
+    //                 Authorization: `Bearer ${accessToken}`,
     //             },
     //         })));
     //         console.log(responses)
@@ -143,7 +143,7 @@ function Preference4() {
                 `&min_tempo=${minTempo}` +
                 `&max_tempo=${maxTempo}` +
                 `&target_tempo=${targetTempo}`;
-    
+
             const accessToken = await AsyncStorage.getItem('accessToken');
             const response = await fetch(apiUrl, {
                 method: 'GET',
@@ -151,7 +151,7 @@ function Preference4() {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-    
+
             if (response.ok) {
                 const recommendation = await response.json();
                 console.log('Recommendation:', recommendation);
@@ -166,10 +166,10 @@ function Preference4() {
 
                 await addSongs(recommendation);
                 numAdded += callLimit;
-    
+
                 // Determine next targetTempo based on pace
                 let nextTargetTempo = targetTempo;
-    
+
                 // The way I've implemented this, I think we say on preference screen 3 that slowDown/speedUp will change the pace after each song and that by the end of the playlist the pace will have changed by 25%
                 const factor = Math.floor(mpm * 0.25 / limit)
                 if (pace === 'slowDown') {
@@ -185,7 +185,7 @@ function Preference4() {
                     minTempo = targetTempo - 100; // change 100 after algorithm is implemented
                     maxTempo = targetTempo + 100; // change 100 after algorithm is implemented
                 }
-    
+
                 if (numAdded < limit) {
                     await getRecommendations(limit, nextTargetTempo, genre, numAdded, mpm, minTempo, maxTempo, pace, callLimit);
                 }
@@ -204,23 +204,23 @@ function Preference4() {
                 console.error('Playlist ID not found in AsyncStorage');
                 return;
             }
-    
+
             // Extract track URIs from recommendations
             const uris = recommendations.tracks.map((track) => track.uri);
-    
+
             const apiUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
-    
+
             const requestBody = {
                 uris: uris,
-                position: 0 
+                position: 0
             };
-    
+
             const accessToken = await AsyncStorage.getItem('accessToken');
             if (!accessToken) {
                 console.error('Access token not found in AsyncStorage');
                 return;
             }
-    
+
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
@@ -229,7 +229,7 @@ function Preference4() {
                 },
                 body: JSON.stringify(requestBody)
             });
-    
+
             if (response.ok) {
                 console.log('Tracks added successfully to playlist');
             } else {
@@ -253,7 +253,7 @@ function Preference4() {
                 console.log(e)
             }
         }
-    }  
+    }
 
     const handleNextPress = async () => {
         try {
@@ -269,18 +269,18 @@ function Preference4() {
                 parseInt(await AsyncStorage.getItem('Preference1m')) || 0;
 
             // 3.5 min is a reasonable avg song length, change if needed
-            const limit = Math.ceil(totalMinutes / 3.5); 
+            const limit = Math.ceil(totalMinutes / 3.5);
             let callLimit = -1;
-            if (pace === 'constant') { 
+            if (pace === 'constant') {
                 callLimit = limit;
             } else {
                 callLimit = 1;
             }
             // Change this with a new algorithm to determine initial tempo
-            const initialTempo = 150; 
+            const initialTempo = 150;
             // Change the +- 100 after algorithm is implemented
             await getRecommendations(limit, initialTempo, genre, 0, minutePerMile, initialTempo - 100, initialTempo + 100, pace, callLimit);
-    
+
             await insertDB();
             setLoading(false);
             navigation.navigate('Home');
@@ -297,17 +297,17 @@ function Preference4() {
                 selectedValue={selectedGenre}
                 style={styles.picker}
                 onValueChange={(itemValue) => setSelectedGenre(itemValue)
-            }>
-                <Picker.Item label="Ambient" value="ambient" color="white"/>
-                <Picker.Item label="Chill" value="chill" color="white"/>
-                <Picker.Item label="Country" value="country" color="white"/>
-                <Picker.Item label="Dance" value="dance" color="white"/>
-                <Picker.Item label="Electronic" value="electronic" color="white"/>
-                <Picker.Item label="Groove" value="groove" color="white"/>
-                <Picker.Item label="House" value="house" color="white"/>
-                <Picker.Item label="Indie" value="indie" color="white"/>
-                <Picker.Item label="Metal" value="metal" color="white"/>
-                <Picker.Item label="Pop" value="ambient" color="white"/>
+                }>
+                <Picker.Item label="Ambient" value="ambient" color="white" />
+                <Picker.Item label="Chill" value="chill" color="white" />
+                <Picker.Item label="Country" value="country" color="white" />
+                <Picker.Item label="Dance" value="dance" color="white" />
+                <Picker.Item label="Electronic" value="electronic" color="white" />
+                <Picker.Item label="Groove" value="groove" color="white" />
+                <Picker.Item label="House" value="house" color="white" />
+                <Picker.Item label="Indie" value="indie" color="white" />
+                <Picker.Item label="Metal" value="metal" color="white" />
+                <Picker.Item label="Pop" value="ambient" color="white" />
             </Picker>
 
 
@@ -315,7 +315,11 @@ function Preference4() {
                 <Text style={[styles.nextButtonText]}>Create</Text>
             </TouchableOpacity>
             {/* To check if works, got rate limited */}
-            {<ReactLoading type="spin" color="#000" /> && isLoading}
+            <Spinner
+                visible={isLoading}
+                textContent={'Loading...'}
+                textStyle={styles.spinnerTextStyle}
+            />
         </View>
     );
 }
@@ -330,15 +334,15 @@ const styles = StyleSheet.create({
     },
     questionText: {
         color: 'white',
-        fontSize: 24, 
-        fontWeight: 'bold', 
+        fontSize: 24,
+        fontWeight: 'bold',
         marginBottom: 20,
-        },
+    },
     picker: {
-        width: '100%', 
-        backgroundColor: '#4C7F7E', 
-        borderRadius: 10, 
-        marginBottom: 20, 
+        width: '100%',
+        backgroundColor: '#4C7F7E',
+        borderRadius: 10,
+        marginBottom: 20,
     },
     buttonContainer: {
         backgroundColor: '#14333F',
@@ -349,9 +353,9 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     nextButtonText: {
-        color: 'white', 
-        fontSize: 20, 
-        fontWeight: 'bold', 
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 'bold',
         margin: 10,
     },
 });
