@@ -11,6 +11,7 @@ const Songs = () => {
     const [songs, setSongs] = useState([]);
     const [playlistName, setPlaylistName] = useState("");
     const [playlistDescription, setPlaylistDescription] = useState("");
+    const [device, setDevice] = useState([]);
 
     const navigation = useNavigation();
 
@@ -23,7 +24,7 @@ const Songs = () => {
         const uri = route.params.data.uri;
         console.log(uri)
         try {
-            const playback = await fetch('https://api.spotify.com/v1/me/player/play', {
+            const playback = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device}`, {
                 method: 'PUT',
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -80,7 +81,26 @@ const Songs = () => {
         }
     }
 
+    async function getDevice() {
+        url = 'https://api.spotify.com/v1/me/player/devices'
+        const accessToken = await AsyncStorage.getItem("accessToken");
+        try {
+            const response = await axios({
+                method: "GET",
+                url: url,
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            console.log('devices', response.data.devices)
+            setDevice(response.data.devices[0].id)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     useEffect(() => {
+        getDevice();
         getSongs();
     }, [])
 
