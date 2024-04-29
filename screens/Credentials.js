@@ -1,6 +1,6 @@
 export const spotifyCredentials = {
-    clientId: 'd6172fc8614948aeacebdcadf338de04',
-    clientSecret: '406c862d289c410691ef7df00acde84b',
+    clientId: '0619c1f2aa5d4d97b2da4d1a2926cf73',
+    clientSecret: 'db6d29a6da284e878236d9c2f5dff05a',
 };
   
 export const scopesArr = [
@@ -16,7 +16,8 @@ export const scopesArr = [
     'playlist-modify-public',
     'playlist-modify-private',
     'user-read-recently-played',
-    'user-top-read'
+    'user-top-read',
+    'streaming'
 ];
   
 export const firebaseConfig = {
