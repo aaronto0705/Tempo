@@ -22,6 +22,10 @@ function Preference2() {
     }
 
     const handleNextPress = async () => {
+        if (minutes < 1) {
+            throw new Error('Minutes should be at least 1.');
+        }
+        
         try {
             const minutesString = minutes.toString();
             const secondsString = seconds.toString();
@@ -42,7 +46,7 @@ function Preference2() {
                     onChange={value => changeMinutes(value)} 
                     textColor='white'
                     rounded
-                    minValue={0}
+                    minValue={1}
                     maxValue={59}
                     containerStyle={styles.numericInputContainer}
                     />
