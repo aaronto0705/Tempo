@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
+// Collects and stroes the playlist name
 function Preference0() {
 
     const navigation = useNavigation();

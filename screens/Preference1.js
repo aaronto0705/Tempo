@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NumericInput from 'react-native-numeric-input';
 
-
+// Collects and stores the duration of the run
 function Preference1() {
 
     const navigation = useNavigation();

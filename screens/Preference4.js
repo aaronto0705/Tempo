@@ -11,6 +11,7 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
+// Collect and store genre and create playlist
 function Preference4() {
 
     const navigation = useNavigation();
