@@ -29,7 +29,7 @@ function getTempoFromMPH(milesPerHour) {
     } else if (milesPerHour >= 10.0) { //6:00 minutes per mile {
         return 180.0;
     } else {
-        return 16 * milesPerHour + 20.0; //linear equation
+        return (16 * milesPerHour) + 20.0; //linear equation
     }
 }
 
@@ -48,7 +48,7 @@ function Preference4() {
             const apiUrl = `https://api.spotify.com/v1/users/${userId}/playlists`;
 
             const name = await AsyncStorage.getItem('Preference0');
-            const paceMinutes = await AsyncStorage.getItem('Prefernce2m');
+            const paceMinutes = await AsyncStorage.getItem('Preference2m');
             const paceSeconds = await AsyncStorage.getItem('Preference2s');
             const genre = await AsyncStorage.getItem('Preference4');
 
@@ -279,7 +279,7 @@ function Preference4() {
                 <Picker.Item label="House" value="house" color="white"/>
                 <Picker.Item label="Indie" value="indie" color="white"/>
                 <Picker.Item label="Metal" value="metal" color="white"/>
-                <Picker.Item label="Pop" value="ambient" color="white"/>
+                <Picker.Item label="Pop" value="pop" color="white"/>
             </Picker>
 
 
