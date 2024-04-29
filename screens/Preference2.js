@@ -4,25 +4,36 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NumericInput from 'react-native-numeric-input';
 
-
+// Collects and stores the desired pace
 function Preference2() {
 
     const navigation = useNavigation();
 
     const [minutes, setMinutes] = useState(0);
+    const [seconds, setSeconds] = useState(0);
 
     const changeMinutes = (text) => {
         const minutesInput = parseInt(text) || 0;
         setMinutes(minutesInput);
     }
+    const changeSeconds = (text) => {
+        const secondsInput = parseInt(text) || 0;
+        setSeconds(secondsInput);
+    }
 
     const handleNextPress = async () => {
+        if (minutes < 1) {
+            throw new Error('Minutes should be at least 1.');
+        }
+        
         try {
             const minutesString = minutes.toString();
-            await AsyncStorage.setItem('Preference2', minutesString);
+            const secondsString = seconds.toString();
+            await AsyncStorage.setItem('Preference2m', minutesString);
+            await AsyncStorage.setItem('Preference2s', secondsString);
             navigation.navigate('Preference3');
         } catch (error) {
-            console.error('Error storing playlist name:', error);
+            console.error('Error storing minutes per mile pace:', error);
         }
       }
 
@@ -35,8 +46,19 @@ function Preference2() {
                     onChange={value => changeMinutes(value)} 
                     textColor='white'
                     rounded
+                    minValue={1}
+                    maxValue={59}
+                    containerStyle={styles.numericInputContainer}
+                    />
+            </View>
+            <View style={styles.inputContainer}>
+                <Text style={styles.label}>Seconds</Text>
+                <NumericInput 
+                    onChange={value => changeSeconds(value)} 
+                    textColor='white'
+                    rounded
                     minValue={0}
-                    maxValue={60}
+                    maxValue={59}
                     containerStyle={styles.numericInputContainer}
                     />
             </View>
