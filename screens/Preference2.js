@@ -26,7 +26,7 @@ function Preference2() {
             const minutesString = minutes.toString();
             const secondsString = seconds.toString();
             await AsyncStorage.setItem('Preference2m', minutesString);
-            await AsyncStorage.setItem('Preference1s', hoursString);
+            await AsyncStorage.setItem('Preference1s', secondsString);
             navigation.navigate('Preference3');
         } catch (error) {
             console.error('Error storing minutes per mile pace:', error);
