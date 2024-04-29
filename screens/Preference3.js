@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Collect and store slow down, constant, or speed up
 function Preference3() {
 
   const navigation = useNavigation();
@@ -18,7 +19,7 @@ function Preference3() {
       await AsyncStorage.setItem('Preference3', selectedOption);
       navigation.navigate('Preference4');
     } catch (error) {
-      console.error('Error storing playlist name:', error);
+      console.error('Error storing slow down, constant, or speed up:', error);
     }
   }
 

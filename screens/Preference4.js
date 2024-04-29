@@ -12,6 +12,30 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
+function minutesPerMileToMilesPerHour(minutes, seconds) {
+    var minutesPerMile = minutes + (seconds / 60);
+    if (minutesPerMile <= 0) {
+        return "Invalid input: minutes per mile must be greater than zero.";
+    }
+
+    // Calculate miles per hour
+    var milesPerHour = 60 / minutesPerMile;
+    
+    return milesPerHour;
+}
+
+function getTempoFromMPH(milesPerHour) {
+    if (milesPerHour <= 5.0) { //12:00 minutes per mile
+        return 100.0
+    } else if (milesPerHour >= 10.0) { //6:00 minutes per mile {
+        return 180.0;
+    } else {
+        return (16 * milesPerHour) + 20.0; //linear equation
+    }
+}
+
+
+// Collect and store genre and create playlist
 function Preference4() {
     const [isLoading, setLoading] = useState(false);
 
@@ -26,13 +50,15 @@ function Preference4() {
             const apiUrl = `https://api.spotify.com/v1/users/${userId}/playlists`;
 
             const name = await AsyncStorage.getItem('Preference0');
-            const pace = await AsyncStorage.getItem('Preference3');
+            const paceMinutes = await AsyncStorage.getItem('Preference2m');
+            const paceSeconds = await AsyncStorage.getItem('Preference2s');
             const genre = await AsyncStorage.getItem('Preference4');
+            const initialTempo = await AsyncStorage.getItem('initialTempo');
 
             // Request payload for creating a new playlist
             const playlistData = {
                 name: name,
-                description: `Playlist with pace of ${pace} and genre of ${genre}`,
+                description: `Playlist with pace of ${paceMinutes}:${paceSeconds}minutes per mile, initial tempo of ${initialTempo}bpm, and genre of ${genre}`,
                 public: false,
             };
 
@@ -172,18 +198,18 @@ function Preference4() {
 
                 // The way I've implemented this, I think we say on preference screen 3 that slowDown/speedUp will change the pace after each song and that by the end of the playlist the pace will have changed by 25%
                 const factor = Math.floor(mpm * 0.25 / limit)
-                if (pace === 'slowDown') {
-                    nextTargetTempo -= factor;
-                    maxTempo = newTempo - 1;
-                    minTempo = newTempo - 100; // change 100 after algorithm is implemented
+                if (pace === 'slowDown') { 
+                    nextTargetTempo -= factor; 
+                    maxTempo = newTempo;
+                    minTempo = newTempo - 30; 
                 } else if (pace === 'speedUp') {
-                    nextTargetTempo += factor;
-                    minTempo = newTempo + 1;
-                    maxTempo = newTempo + 100; // change 100 after algorithm is implemented
+                    nextTargetTempo += factor; 
+                    minTempo = newTempo;
+                    maxTempo = newTempo + 30; 
                 }
                 else {
-                    minTempo = targetTempo - 100; // change 100 after algorithm is implemented
-                    maxTempo = targetTempo + 100; // change 100 after algorithm is implemented
+                    minTempo = targetTempo - 15;
+                    maxTempo = targetTempo + 15; 
                 }
 
                 if (numAdded < limit) {
@@ -264,7 +290,9 @@ function Preference4() {
 
             await handleCreatePlaylist();
 
-            const minutePerMile = parseFloat(await AsyncStorage.getItem('Preference2')) || 0;
+            const paceMinutes = parseInt(await AsyncStorage.getItem('Preference2m')) || 0;
+            const paceSeconds = parseInt(await AsyncStorage.getItem('Preference2s')) || 0;
+            const minutePerMile = paceMinutes + (paceSeconds / 60);
             const totalMinutes = parseInt(await AsyncStorage.getItem('Preference1h')) * 60 +
                 parseInt(await AsyncStorage.getItem('Preference1m')) || 0;
 
@@ -276,11 +304,10 @@ function Preference4() {
             } else {
                 callLimit = 1;
             }
-            // Change this with a new algorithm to determine initial tempo
-            const initialTempo = 150;
-            // Change the +- 100 after algorithm is implemented
-            await getRecommendations(limit, initialTempo, genre, 0, minutePerMile, initialTempo - 100, initialTempo + 100, pace, callLimit);
-
+            const milesPerHour = minutesPerMileToMilesPerHour(paceMinutes, paceSeconds);
+            const initialTempo = Math.round(getTempoFromMPH(milesPerHour)); 
+            await AsyncStorage.setItem('initialTempo', initialTempo.toString());
+            await getRecommendations(limit, initialTempo, genre, 0, minutePerMile, initialTempo - 15, initialTempo + 15, pace, callLimit);
             await insertDB();
             setLoading(false);
             navigation.navigate('Home');
@@ -297,17 +324,17 @@ function Preference4() {
                 selectedValue={selectedGenre}
                 style={styles.picker}
                 onValueChange={(itemValue) => setSelectedGenre(itemValue)
-                }>
-                <Picker.Item label="Ambient" value="ambient" color="white" />
-                <Picker.Item label="Chill" value="chill" color="white" />
-                <Picker.Item label="Country" value="country" color="white" />
-                <Picker.Item label="Dance" value="dance" color="white" />
-                <Picker.Item label="Electronic" value="electronic" color="white" />
-                <Picker.Item label="Groove" value="groove" color="white" />
-                <Picker.Item label="House" value="house" color="white" />
-                <Picker.Item label="Indie" value="indie" color="white" />
-                <Picker.Item label="Metal" value="metal" color="white" />
-                <Picker.Item label="Pop" value="ambient" color="white" />
+            }>
+                <Picker.Item label="Ambient" value="ambient" color="white"/>
+                <Picker.Item label="Chill" value="chill" color="white"/>
+                <Picker.Item label="Country" value="country" color="white"/>
+                <Picker.Item label="Dance" value="dance" color="white"/>
+                <Picker.Item label="Electronic" value="electronic" color="white"/>
+                <Picker.Item label="Groove" value="groove" color="white"/>
+                <Picker.Item label="House" value="house" color="white"/>
+                <Picker.Item label="Indie" value="indie" color="white"/>
+                <Picker.Item label="Metal" value="metal" color="white"/>
+                <Picker.Item label="Pop" value="pop" color="white"/>
             </Picker>
 
 
