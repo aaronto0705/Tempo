@@ -200,11 +200,11 @@ function Preference4() {
                 const factor = Math.floor(mpm * 0.25 / limit)
                 if (pace === 'slowDown') { 
                     nextTargetTempo -= factor; 
-                    maxTempo = newTempo;
+                    maxTempo = newTempo - 1;
                     minTempo = newTempo - 30; 
                 } else if (pace === 'speedUp') {
                     nextTargetTempo += factor; 
-                    minTempo = newTempo;
+                    minTempo = newTempo + 1;
                     maxTempo = newTempo + 30; 
                 }
                 else {
