@@ -26,7 +26,7 @@ function minutesPerMileToMilesPerHour(minutes, seconds) {
 function getTempoFromMPH(milesPerHour) {
     if (milesPerHour <= 5.0) { //12:00 minutes per mile
         return 100.0
-    } else if (milesPerHours >= 10.0) { //6:00 minutes per mile {
+    } else if (milesPerHour >= 10.0) { //6:00 minutes per mile {
         return 180.0;
     } else {
         return 16 * milesPerHour + 20.0; //linear equation
