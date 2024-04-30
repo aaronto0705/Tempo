@@ -82,7 +82,7 @@ const Songs = () => {
     }
 
     async function getDevice() {
-        url = 'https://api.spotify.com/v1/me/player/devices'
+        let url = 'https://api.spotify.com/v1/me/player/devices'
         const accessToken = await AsyncStorage.getItem("accessToken");
         try {
             const response = await axios({
