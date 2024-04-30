@@ -110,6 +110,10 @@ function Preference4() {
         }
     };
 
+
+    // This gets all the URLS then uses a Promise to get all of them. Doesn't work for speedup&slowdown
+    // since you can't really adjust the speed of min/max tempo
+    // Leaving for if something can work or if someone wants to try and see what can be done
     // const getRecommendations = async (limit, targetTempo, genre, numAdded, mpm, minTempo, maxTempo, pace, callLimit) => {
     //     try {
     //         const accessToken = await AsyncStorage.getItem('accessToken');
