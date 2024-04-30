@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import { firebaseConfig } from './Credentials';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const app = initializeApp(firebaseConfig);
 
@@ -36,6 +37,7 @@ function getTempoFromMPH(milesPerHour) {
 
 // Collect and store genre and create playlist
 function Preference4() {
+    const [isLoading, setLoading] = useState(false);
 
     const navigation = useNavigation();
 
@@ -85,14 +87,14 @@ function Preference4() {
     const getTrackTempo = async (trackId, accessToken) => {
         try {
             const apiUrl = `https://api.spotify.com/v1/audio-features/${trackId}`;
-    
+
             const response = await fetch(apiUrl, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-    
+
             if (response.ok) {
                 const trackFeatures = await response.json();
                 const tempo = trackFeatures.tempo; // Extract the tempo (BPM) from track features
@@ -108,6 +110,60 @@ function Preference4() {
         }
     };
 
+
+    // This gets all the URLS then uses a Promise to get all of them. Doesn't work for speedup&slowdown
+    // since you can't really adjust the speed of min/max tempo
+    // Leaving for if something can work or if someone wants to try and see what can be done
+    // const getRecommendations = async (limit, targetTempo, genre, numAdded, mpm, minTempo, maxTempo, pace, callLimit) => {
+    //     try {
+    //         const accessToken = await AsyncStorage.getItem('accessToken');
+    //         let recUrl = []
+    //         while (numAdded < limit) {
+    //             const apiUrl = `https://api.spotify.com/v1/recommendations?` +
+    //             `seed_genres=${encodeURIComponent(genre)}` +
+    //             `&limit=${callLimit}` +  // Always request one song per API call
+    //             `&market=US` +
+    //             `&min_tempo=${minTempo}` +
+    //             `&max_tempo=${maxTempo}` + 
+    //             `&target_tempo=${targetTempo}`;
+    //             console.log(apiUrl);
+    //             console.log(accessToken);
+    //             recUrl.push(apiUrl)
+    //             numAdded += callLimit;
+    //             const factor = Math.floor(mpm * 0.25 / limit)
+    //             if (pace === 'slowDown') { 
+    //                 targetTempo -= factor; 
+    //                 maxTempo = targetTempo+50;
+    //                 minTempo = targetTempo - 100; // change 100 after algorithm is implemented
+    //             } else if (pace === 'speedUp') {
+    //                 targetTempo += factor; 
+    //                 minTempo = targetTempo-50;
+    //                 maxTempo = targetTempo + 100; // change 100 after algorithm is implemented
+    //             }
+    //             else {
+    //                 minTempo = targetTempo - 100; // change 100 after algorithm is implemented
+    //                 maxTempo = targetTempo + 100; // change 100 after algorithm is implemented
+    //             }
+
+    //         }
+    //         const responses = await Promise.all(recUrl.map(url => fetch(url, {
+    //             method: 'GET',
+    //             headers: {
+    //                 Authorization: `Bearer ${accessToken}`,
+    //             },
+    //         })));
+    //         console.log(responses)
+    //         const recommendations = await Promise.all(responses.map(response => response.json()));
+    //         console.log('Recommendations:', recommendations);
+    //         await Promise.all(recommendations.map(recommendation => addSongs(recommendation)));
+    //         // Continue with the rest of the code...
+    //         console.log('added songs')
+    //     } catch (e) {
+    //         console.log(e)
+    //     }
+    // }
+
+
     const getRecommendations = async (limit, targetTempo, genre, numAdded, mpm, minTempo, maxTempo, pace, callLimit) => {
         try {
             const apiUrl = `https://api.spotify.com/v1/recommendations?` +
@@ -115,9 +171,9 @@ function Preference4() {
                 `&limit=${callLimit}` +  // Always request one song per API call
                 `&market=US` +
                 `&min_tempo=${minTempo}` +
-                `&max_tempo=${maxTempo}` + 
+                `&max_tempo=${maxTempo}` +
                 `&target_tempo=${targetTempo}`;
-    
+
             const accessToken = await AsyncStorage.getItem('accessToken');
             const response = await fetch(apiUrl, {
                 method: 'GET',
@@ -125,7 +181,7 @@ function Preference4() {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-    
+
             if (response.ok) {
                 const recommendation = await response.json();
                 console.log('Recommendation:', recommendation);
@@ -140,26 +196,26 @@ function Preference4() {
 
                 await addSongs(recommendation);
                 numAdded += callLimit;
-    
+
                 // Determine next targetTempo based on pace
                 let nextTargetTempo = targetTempo;
-    
+
                 // The way I've implemented this, I think we say on preference screen 3 that slowDown/speedUp will change the pace after each song and that by the end of the playlist the pace will have changed by 25%
                 const factor = Math.floor(mpm * 0.25 / limit)
                 if (pace === 'slowDown') { 
                     nextTargetTempo -= factor; 
-                    maxTempo = newTempo;
+                    maxTempo = newTempo - 1;
                     minTempo = newTempo - 30; 
                 } else if (pace === 'speedUp') {
                     nextTargetTempo += factor; 
-                    minTempo = newTempo;
+                    minTempo = newTempo + 1;
                     maxTempo = newTempo + 30; 
                 }
                 else {
                     minTempo = targetTempo - 15;
                     maxTempo = targetTempo + 15; 
                 }
-    
+
                 if (numAdded < limit) {
                     await getRecommendations(limit, nextTargetTempo, genre, numAdded, mpm, minTempo, maxTempo, pace, callLimit);
                 }
@@ -170,7 +226,7 @@ function Preference4() {
             console.error('Error creating recommendations:', error);
         }
     };
-    
+
     const addSongs = async (recommendations) => {
         try {
             const playlistId = await AsyncStorage.getItem('PlaylistId');
@@ -178,23 +234,23 @@ function Preference4() {
                 console.error('Playlist ID not found in AsyncStorage');
                 return;
             }
-    
+
             // Extract track URIs from recommendations
             const uris = recommendations.tracks.map((track) => track.uri);
-    
+
             const apiUrl = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
-    
+
             const requestBody = {
                 uris: uris,
-                position: 0 
+                position: 0
             };
-    
+
             const accessToken = await AsyncStorage.getItem('accessToken');
             if (!accessToken) {
                 console.error('Access token not found in AsyncStorage');
                 return;
             }
-    
+
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
@@ -203,7 +259,7 @@ function Preference4() {
                 },
                 body: JSON.stringify(requestBody)
             });
-    
+
             if (response.ok) {
                 console.log('Tracks added successfully to playlist');
             } else {
@@ -222,15 +278,16 @@ function Preference4() {
             var existing = docSnap.data().playlists || [];
             existing.push(await AsyncStorage.getItem('PlaylistId'));
             try {
-                await setDoc(dbRef, {playlists: existing}, {merge: true});
+                await setDoc(dbRef, { playlists: existing }, { merge: true });
             } catch (e) {
                 console.log(e)
             }
         }
     }
-    
+
     const handleNextPress = async () => {
         try {
+            setLoading(true);
             await AsyncStorage.setItem('Preference4', selectedGenre);
             const genre = selectedGenre
             const pace = await AsyncStorage.getItem('Preference3');
@@ -241,12 +298,12 @@ function Preference4() {
             const paceSeconds = parseInt(await AsyncStorage.getItem('Preference2s')) || 0;
             const minutePerMile = paceMinutes + (paceSeconds / 60);
             const totalMinutes = parseInt(await AsyncStorage.getItem('Preference1h')) * 60 +
-                                 parseInt(await AsyncStorage.getItem('Preference1m')) || 0;
+                parseInt(await AsyncStorage.getItem('Preference1m')) || 0;
 
             // 3.5 min is a reasonable avg song length, change if needed
-            const limit = Math.ceil(totalMinutes / 3.5); 
+            const limit = Math.ceil(totalMinutes / 3.5);
             let callLimit = -1;
-            if (pace === 'constant') { 
+            if (pace === 'constant') {
                 callLimit = limit;
             } else {
                 callLimit = 1;
@@ -255,8 +312,8 @@ function Preference4() {
             const initialTempo = Math.round(getTempoFromMPH(milesPerHour)); 
             await AsyncStorage.setItem('initialTempo', initialTempo.toString());
             await getRecommendations(limit, initialTempo, genre, 0, minutePerMile, initialTempo - 15, initialTempo + 15, pace, callLimit);
-    
             await insertDB();
+            setLoading(false);
             navigation.navigate('Home');
         } catch (error) {
             console.error('Error storing playlist name:', error);
@@ -288,6 +345,12 @@ function Preference4() {
             <TouchableOpacity style={styles.buttonContainer} onPress={handleNextPress}>
                 <Text style={[styles.nextButtonText]}>Create</Text>
             </TouchableOpacity>
+            {/* To check if works, got rate limited */}
+            <Spinner
+                visible={isLoading}
+                textContent={'Loading...'}
+                textStyle={styles.spinnerTextStyle}
+            />
         </View>
     );
 }
@@ -302,15 +365,15 @@ const styles = StyleSheet.create({
     },
     questionText: {
         color: 'white',
-        fontSize: 24, 
-        fontWeight: 'bold', 
+        fontSize: 24,
+        fontWeight: 'bold',
         marginBottom: 20,
-        },
+    },
     picker: {
-        width: '100%', 
-        backgroundColor: '#4C7F7E', 
-        borderRadius: 10, 
-        marginBottom: 20, 
+        width: '100%',
+        backgroundColor: '#4C7F7E',
+        borderRadius: 10,
+        marginBottom: 20,
     },
     buttonContainer: {
         backgroundColor: '#14333F',
@@ -321,12 +384,12 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     nextButtonText: {
-        color: 'white', 
-        fontSize: 20, 
-        fontWeight: 'bold', 
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 'bold',
         margin: 10,
     },
-  });
+});
 
 
 export default Preference4;

@@ -75,7 +75,7 @@ export const refreshTokens = async () => {
       if (refresh_token) {
         await AsyncStorage.setItem('refreshToken', refresh_token);
       }
-      await setUserData('expirationTime', expirationTime);
+      await setUserData('expirationTime', expirationTime.toString());
     }
   } catch (error) {
     console.error('Token Refresh Error:', error);
