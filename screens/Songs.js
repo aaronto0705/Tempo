@@ -21,6 +21,7 @@ const Songs = () => {
 
     async function startMusic() {
         const accessToken = await AsyncStorage.getItem("accessToken");
+        console.log(accessToken);
         const uri = route.params.data.uri;
         console.log(uri)
         try {
@@ -112,7 +113,7 @@ const Songs = () => {
             <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
                 <Image source={{ uri: imageUri }} style={{ width: 200, height: 200, margin: 20 }} />
             </View>
-            <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 30 }}>
+            <View style={{ alignItems: 'flex-end', marginRight: 30 }}>
                 <Pressable
                     onPress={startMusic}
                     style={{
