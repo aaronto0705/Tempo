@@ -18,7 +18,7 @@ To run the app locally on your machine, follow these steps:
    ```
 
 2. **Setup Spotify Account**
-   - Make sure you have a Spotify account and know your login credentials.
+   - Make sure you have a Spotify Premium account and know your login credentials.
 
 3. **Create a Spotify Developer Account**
    - Go to the [Spotify Developer Dashboard](https://developer.spotify.com).
