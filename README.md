@@ -49,3 +49,5 @@ To run the app locally on your machine, follow these steps:
 
 8. **Enjoy Tempo!**
    - You can now use Tempo to discover and enjoy music from Spotify.
+  
+**Make sure you close Spotify on all other devices before you start streaming. The only one open should be on the current device. If the play button does not work, open Spotify, start a random song, pause it, then go back to Tempo and press play. This is because we are using Spotify's API to stream songs due to copyright issues in the music industry.**
